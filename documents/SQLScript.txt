@@ -1,0 +1,224 @@
+/*
+--disable all back end processes connected to a database
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE pg_stat_activity.datname = 'TestDatabase'
+  AND pid <> pg_backend_pid();
+  
+CREATE DATABASE "TestDatabase"
+    WITH 
+    OWNER = postgres
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'Polish_Poland.1250'
+    LC_CTYPE = 'Polish_Poland.1250'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+	
+	CREATE EXTENSION postgis;
+	SELECT postgis_full_version();*/
+	
+	CREATE SEQUENCE public.hibernate_sequence
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+ALTER SEQUENCE public.hibernate_sequence
+    OWNER TO postgres;
+	
+-- osm layer
+create table planet_osm_nodes(
+	id bigserial primary key not null,
+	tags text[],
+	geom geometry(POINT)
+);
+
+create table planet_osm_ways(
+	id bigserial primary key not null,
+	nodes bigint[],
+	tags text[],
+	geom geometry(LINESTRING)
+);
+
+-- segment layer
+create table sm_nodes(
+	id bigserial primary key not null,
+	osm_node bigint references planet_osm_nodes(id),
+	geom geometry(POINT)
+);
+create table sm_links(
+	id bigserial primary key not null,
+	way_id bigint references planet_osm_ways(id),
+	osm_start_node bigint references planet_osm_nodes(id),
+	osm_end_node bigint references planet_osm_nodes(id),
+	geom geometry(LINESTRING)
+);
+create table sm_segments(
+	id bigserial primary key not null,
+	link_id bigint references sm_links(id),
+	start_node bigint references sm_nodes(id),
+	end_node bigint references sm_nodes(id),
+	geom geometry(LINESTRING)
+);
+
+-- dictionary
+create table sm_dictionary(
+	id bigserial primary key not null,
+	name text,
+	description text,
+	key text[],
+	datatypes text[],
+	required boolean[]
+);
+
+-- properties
+create table sm_node_properties(
+	id bigserial primary key not null,
+	node_id bigint references sm_nodes(id),
+	tags text[],
+	description text,
+	dictionary_id bigint references sm_dictionary(id)
+);
+create table sm_segment_properties(
+	id bigserial primary key not null,
+	segment_id bigint references sm_segments(id),
+	tags text[],
+	description text,
+	dictionary_id bigint references sm_dictionary(id)
+);
+create table sm_link_properties(
+	id bigserial primary key not null,
+	link_id bigint references sm_links(id),
+	tags text[],
+	description text,
+	dictionary_id bigint references sm_dictionary(id)
+);
+
+-- osm layer inserts
+insert into planet_osm_nodes (tags,geom) values
+	('{"planet_osm_nodes_1_tag1","planet_osm_nodes_1_tag2"}',ST_GeomFromText('point(0 0)')),
+	('{"planet_osm_nodes_2_tag1","planet_osm_nodes_2_tag2"}',ST_GeomFromText('point(10 0)')),
+	('{"planet_osm_nodes_3_tag1","planet_osm_nodes_3_tag2"}',ST_GeomFromText('point(4 2)')),
+	('{"planet_osm_nodes_4_tag1","planet_osm_nodes_4_tag2"}',ST_GeomFromText('point(0 4)')),
+	('{"planet_osm_nodes_5_tag1","planet_osm_nodes_5_tag2"}',ST_GeomFromText('point(6 6)'));
+	
+insert into planet_osm_ways (nodes,tags,geom) values
+	('{1,3}','{"planet_osm_ways_1_tag1","planet_osm_ways_1_tag2"}',ST_GeomFromText('linestring(0 0,4 2)')),
+	('{2,3,4}','{"planet_osm_ways_2_tag1","planet_osm_ways_2_tag2"}',ST_GeomFromText('linestring(10 0,4 2,0 4)')),
+	('{3,5,4}','{"planet_osm_ways_3_tag1","planet_osm_ways_3_tag2"}',ST_GeomFromText('linestring(0 4,6 6,4 2)'));
+	
+-- segment layer inserts
+insert into sm_nodes (osm_node,geom) values
+    ((SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(4 2)'))),ST_GeomFromText('point(4 2)')),
+	(NULL,ST_GeomFromText('point(5 4)')),
+	((SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(6 6)'))),ST_GeomFromText('point(6 6)'));
+	
+insert into sm_links (way_id,osm_start_node,osm_end_node,geom) values
+	((SELECT id from planet_osm_ways as osm_ways WHERE ST_Equals(osm_ways.geom,ST_GeomFromText('linestring(10 0,4 2,0 4)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(10 0)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(4 2)'))),
+		ST_GeomFromText('linestring(10 0,4 2)')),
+	((SELECT id from planet_osm_ways as osm_ways WHERE ST_Equals(osm_ways.geom,ST_GeomFromText('linestring(10 0,4 2,0 4)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(4 2)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(0 4)'))),
+		ST_GeomFromText('linestring(4 2,0 4)')),
+	((SELECT id from planet_osm_ways as osm_ways WHERE ST_Equals(osm_ways.geom,ST_GeomFromText('linestring(10 0,4 2,0 4)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(0 4)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(4 2)'))),
+		ST_GeomFromText('linestring(0 4,4 2)')),
+	((SELECT id from planet_osm_ways as osm_ways WHERE ST_Equals(osm_ways.geom,ST_GeomFromText('linestring(10 0,4 2,0 4)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(4 2)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(10 0)'))),
+		ST_GeomFromText('linestring(4 2,10 0)')),
+	((SELECT id from planet_osm_ways as osm_ways WHERE ST_Equals(osm_ways.geom,ST_GeomFromText('linestring(0 0,4 2)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(0 0)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(4 2)'))),
+		ST_GeomFromText('linestring(0 0,4 2)')),
+	((SELECT id from planet_osm_ways as osm_ways WHERE ST_Equals(osm_ways.geom,ST_GeomFromText('linestring(0 4,6 6,4 2)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(0 4)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(6 6)'))),
+		ST_GeomFromText('linestring(0 4,6 6)')),
+	((SELECT id from planet_osm_ways as osm_ways WHERE ST_Equals(osm_ways.geom,ST_GeomFromText('linestring(0 4,6 6,4 2)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(6 6)'))),
+		(SELECT id from planet_osm_nodes as osm_nodes WHERE ST_Equals(osm_nodes.geom,ST_GeomFromText('point(4 2)'))),
+		ST_GeomFromText('linestring(6 6,4 2)'));	
+
+insert into	sm_segments (link_id,start_node,end_node,geom) values
+	((SELECT id from sm_links as links WHERE ST_Equals(links.geom,ST_GeomFromText('linestring(6 6,4 2)'))),
+		(SELECT id from sm_nodes as nodes WHERE ST_Equals(nodes.geom,ST_GeomFromText('point(6 6)'))),
+		(SELECT id from sm_nodes as nodes WHERE ST_Equals(nodes.geom,ST_GeomFromText('point(5 4)'))),
+		ST_GeomFromText('linestring(6 6,5 4)')),
+	((SELECT id from sm_links as links WHERE ST_Equals(links.geom,ST_GeomFromText('linestring(6 6,4 2)'))),
+		(SELECT id from sm_nodes as nodes WHERE ST_Equals(nodes.geom,ST_GeomFromText('point(5 4)'))),
+		(SELECT id from sm_nodes as nodes WHERE ST_Equals(nodes.geom,ST_GeomFromText('point(4 2)'))),
+		ST_GeomFromText('linestring(5 4,4 2)'));	
+	
+-- dictionary inserts
+insert into sm_dictionary (name,description,key,datatypes,required) values
+	('P1','P1 property','{"P1K.1"}','{"Int"}','{FALSE}'),
+	('P2','P2 property','{"P2K.1","P2K.2"}','{"Int","String"}','{FALSE,FALSE}'),
+	('P3','P3 property','{"P3K.1","P3K.2","P3K.3"}','{"Int","Int","String"}','{FALSE,FALSE,FALSE}');
+	
+-- properties inserts
+insert into sm_node_properties (node_id,tags,description,dictionary_id) values
+	((SELECT id from sm_nodes as nodes WHERE ST_Equals(nodes.geom,ST_GeomFromText('point(4 2)'))),
+		'{"P1K.1"}',
+		'P1 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P1 property')),
+	((SELECT id from sm_nodes as nodes WHERE ST_Equals(nodes.geom,ST_GeomFromText('point(4 2)'))),
+		'{"P2K.1"}',
+		'P2 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P2 property')),
+	((SELECT id from sm_nodes as nodes WHERE ST_Equals(nodes.geom,ST_GeomFromText('point(5 4)'))),
+		'{"P1K.1"}',
+		'P1 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P1 property')),
+	((SELECT id from sm_nodes as nodes WHERE ST_Equals(nodes.geom,ST_GeomFromText('point(6 6)'))),
+		'{"P3K.1"}',
+		'P3 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P3 property'));
+		
+insert into sm_link_properties (link_id,tags,description,dictionary_id) values
+	((SELECT id from sm_links as links WHERE ST_Equals(ST_StartPoint(links.geom),ST_StartPoint(ST_GeomFromText('linestring(10 0,4 2)'))) and ST_Equals(ST_EndPoint(links.geom),ST_EndPoint(ST_GeomFromText('linestring(10 0,4 2)')))),
+		'{"P2K.1"}',
+		'P2 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P2 property')),
+	((SELECT id from sm_links as links WHERE ST_Equals(ST_StartPoint(links.geom),ST_StartPoint(ST_GeomFromText('linestring(4 2,0 4)'))) and ST_Equals(ST_EndPoint(links.geom),ST_EndPoint(ST_GeomFromText('linestring(4 2,0 4)')))),
+		'{"P2K.1"}',
+		'P2 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P2 property')),
+	((SELECT id from sm_links as links WHERE ST_Equals(ST_StartPoint(links.geom),ST_StartPoint(ST_GeomFromText('linestring(0 4,4 2)'))) and ST_Equals(ST_EndPoint(links.geom),ST_EndPoint(ST_GeomFromText('linestring(0 4,4 2)')))),
+		'{"P2K.1"}',
+		'P2 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P2 property')),
+	((SELECT id from sm_links as links WHERE ST_Equals(ST_StartPoint(links.geom),ST_StartPoint(ST_GeomFromText('linestring(4 2,10 0)'))) and ST_Equals(ST_EndPoint(links.geom),ST_EndPoint(ST_GeomFromText('linestring(4 2,10 0)')))),
+		'{"P2K.1"}',
+		'P2 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P2 property')),
+	((SELECT id from sm_links as links WHERE ST_Equals(links.geom,ST_GeomFromText('linestring(0 0,4 2)'))),
+		'{"P3K.1"}',
+		'P3 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P3 property')),
+	((SELECT id from sm_links as links WHERE ST_Equals(links.geom,ST_GeomFromText('linestring(0 4,6 6)'))),
+		'{"P3K.1"}',
+		'P3 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P3 property')),
+	((SELECT id from sm_links as links WHERE ST_Equals(links.geom,ST_GeomFromText('linestring(6 6,4 2)'))),
+		'{"P3K.1"}',
+		'P3 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P3 property'));
+		
+insert into sm_segment_properties (segment_id,tags,description,dictionary_id) values
+	((SELECT id from sm_segments as segments WHERE ST_Equals(segments.geom,ST_GeomFromText('linestring(6 6,5 4)'))),
+		'{"P3K.1"}',
+		'P3 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P3 property')),		
+	((SELECT id from sm_segments as segments WHERE ST_Equals(segments.geom,ST_GeomFromText('linestring(5 4,4 2)'))),
+		'{"P3K.2"}',
+		'P3 property',
+		(SELECT id from sm_dictionary as dictionary WHERE dictionary.description = 'P3 property'));
+	
+
+
+
