@@ -3,5 +3,8 @@ http://localhost:8080/kie-wb/?locale=en_US
 
 RuleEngine-1.0.0.jar
 
+mvn compile
+mvn clean package
+
 startup
 shutdown

@@ -1,6 +1,6 @@
 **/*.log
 **/target/
 **/.settings/
-**/.classpath/
-**/.project/
+**/.classpath
+**/.project
 **/build/
