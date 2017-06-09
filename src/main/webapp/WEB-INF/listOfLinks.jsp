@@ -9,15 +9,41 @@
       <form:form method = "POST" action = "/RuleEngine/sm_links/addlinksArea">
          <table>
             <tr>
-               <td><form:label path = "latitude">Latitude</form:label></td>
-               <td><form:input path = "latitude" /></td>
+               <td><form:label path = "leftUpper_latitude">leftUpper_latitude</form:label></td>
+               <td><form:input path = "leftUpper_latitude" /></td>
             </tr>
             <tr>
-               <td><form:label path = "longitude">Longitude</form:label></td>
-               <td><form:input path = "longitude" /></td>
+               <td><form:label path = "leftUpper_longitude">leftUpper_longitude</form:label></td>
+               <td><form:input path = "leftUpper_longitude" /></td>
             </tr>
             <tr>
-               <td colspan = "2">
+               <td><form:label path = "leftLower_latitude">leftLower_latitude</form:label></td>
+               <td><form:input path = "leftLower_latitude" /></td>
+            </tr>
+            <tr>
+               <td><form:label path = "leftLower_longitude">leftLower_longitude</form:label></td>
+               <td><form:input path = "leftLower_longitude" /></td>
+            </tr>
+            <tr>
+               <td><form:label path = "rightUpper_latitude">rightUpper_latitude</form:label></td>
+               <td><form:input path = "rightUpper_latitude" /></td>
+            </tr>
+            <tr>
+               <td><form:label path = "rightUpper_longitude">rightUpper_longitude</form:label></td>
+               <td><form:input path = "rightUpper_longitude" /></td>
+            </tr>
+            <tr>
+               <td><form:label path = "rightLower_latitude">rightLower_latitude</form:label></td>
+               <td><form:input path = "rightLower_latitude" /></td>
+            </tr>
+            <tr>
+               <td><form:label path = "rightLower_longitude">rightLower_longitude</form:label></td>
+               <td><form:input path = "rightLower_longitude" /></td>
+            </tr>
+            <tr>              
+            
+            <tr>
+               <td colspan = "8">
                   <input type = "submit" value = "Submit"/>
                </td>
             </tr>
