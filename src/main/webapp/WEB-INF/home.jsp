@@ -17,5 +17,9 @@ ${message}<br/>
 ${message}<br/>
 <a href="${pageContext.request.contextPath}/sm_links/listOfLinks.html">listOfLinks</a><br/>
 </p>
+<p>
+${message}<br/>
+<a href="${pageContext.request.contextPath}/chooseLink/viewLinks.html">chooseLink</a><br/>
+</p>
 </body>
 </html>

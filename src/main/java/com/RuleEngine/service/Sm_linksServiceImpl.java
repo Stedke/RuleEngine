@@ -17,6 +17,8 @@ public class Sm_linksServiceImpl implements Sm_linksService{
 	private sm_linksDAO sm_linksDAO;
 	
 	private List<sm_links> sm_Links;
+	
+	private Integer chosenSm_linkId;
 
 	@Transactional
 	public void getSm_links(ArrayList<String> linksArea) {
@@ -26,9 +28,14 @@ public class Sm_linksServiceImpl implements Sm_linksService{
 	           System.out.println(link.toString());
 	       }
 	}
-
 	@Override
 	public List<sm_links> getChosenSm_Links() {
 		return sm_Links;
+	}
+	@Override
+	public void setChosenSm_linkId(Integer chosenSm_linkId) {
+		this.chosenSm_linkId = chosenSm_linkId;
+        System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+        System.out.println(chosenSm_linkId.toString());
 	}
 }
