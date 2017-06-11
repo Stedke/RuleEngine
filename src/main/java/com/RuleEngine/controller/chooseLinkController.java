@@ -30,7 +30,9 @@ public class chooseLinkController {
            ModelMap model) {
        model.addAttribute("chosenSm_LinkId", chosenSmlink.getChosenSm_LinkId());
        
-       Sm_linksService.setChosenSm_linkId(chosenSmlink.getChosenSm_LinkId());
+       boolean isSuccessful = Sm_linksService.setChosenSm_linkId(chosenSmlink.getChosenSm_LinkId());
+       
+       model.addAttribute("isSuccessful",isSuccessful);
        
        return "result2";
     }

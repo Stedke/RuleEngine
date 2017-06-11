@@ -33,9 +33,22 @@ public class Sm_linksServiceImpl implements Sm_linksService{
 		return sm_Links;
 	}
 	@Override
-	public void setChosenSm_linkId(Integer chosenSm_linkId) {
-		this.chosenSm_linkId = chosenSm_linkId;
-        System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-        System.out.println(chosenSm_linkId.toString());
+	public boolean setChosenSm_linkId(Integer chosenSm_linkId) {
+		
+		boolean isValid = false;
+		for(sm_links link : sm_Links){
+			if(link.getId() == chosenSm_linkId.longValue()){	
+				isValid=true;
+				break;
+			}
+		}
+		
+		if(isValid){
+			this.chosenSm_linkId = chosenSm_linkId;
+	        System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+	        System.out.println(chosenSm_linkId.toString());
+	        return true;
+		}else
+			return false;
 	}
 }
