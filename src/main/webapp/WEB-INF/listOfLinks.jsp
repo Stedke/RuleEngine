@@ -39,11 +39,9 @@
             <tr>
                <td><form:label path = "rightLower_longitude">rightLower_longitude</form:label></td>
                <td><form:input path = "rightLower_longitude" /></td>
-            </tr>
-            <tr>              
-            
+            </tr>          
             <tr>
-               <td colspan = "8">
+               <td colspan = "7">
                   <input type = "submit" value = "Submit"/>
                </td>
             </tr>

@@ -40,7 +40,7 @@ public class BigIntArrayType implements UserType {
  public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
  // get the first column names
  if (names != null && names.length > 0 && rs != null && rs.getArray(names[0]) != null) {
- String[] results = (String[]) rs.getArray(names[0]).getArray();
+	 Long[] results = (Long[]) rs.getArray(names[0]).getArray();
  return results;
  }
  return null;
@@ -61,7 +61,7 @@ public class BigIntArrayType implements UserType {
 
  @Override
  public Object deepCopy(Object value) throws HibernateException {
- return value == null ? null : ((String[]) value).clone();
+ return value == null ? null : ((Long[]) value).clone();
  }
 
  @Override

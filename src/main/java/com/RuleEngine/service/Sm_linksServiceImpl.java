@@ -21,6 +21,10 @@ public class Sm_linksServiceImpl implements Sm_linksService{
 	@Transactional
 	public void getSm_links(ArrayList<String> linksArea) {
 		sm_Links = sm_linksDAO.getSm_links(linksArea);
+		
+	       for(sm_links link : sm_Links) {
+	           System.out.println(link.toString());
+	       }
 	}
 
 	@Override

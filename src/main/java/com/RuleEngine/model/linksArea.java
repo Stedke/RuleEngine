@@ -55,7 +55,7 @@ public class linksArea {
 	public String getRightLower_longitude() {
 		return rightLower_longitude;
 	}
-	public void setRightlower_longitude(String rightLower_longitude) {
+	public void setRightLower_longitude(String rightLower_longitude) {
 		this.rightLower_longitude = rightLower_longitude;
 	}
 }

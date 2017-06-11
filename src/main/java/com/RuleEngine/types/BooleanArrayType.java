@@ -40,7 +40,7 @@ public class BooleanArrayType implements UserType {
  public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
  // get the first column names
  if (names != null && names.length > 0 && rs != null && rs.getArray(names[0]) != null) {
- String[] results = (String[]) rs.getArray(names[0]).getArray();
+	 Boolean[] results = (Boolean[]) rs.getArray(names[0]).getArray();
  return results;
  }
  return null;
