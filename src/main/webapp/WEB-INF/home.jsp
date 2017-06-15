@@ -21,5 +21,9 @@ ${message}<br/>
 ${message}<br/>
 <a href="${pageContext.request.contextPath}/chooseLink/viewLinks.html">chooseLink</a><br/>
 </p>
+<p>
+${message}<br/>
+<a href="${pageContext.request.contextPath}/preload/Preload.html">Preload</a><br/>
+</p>
 </body>
 </html>

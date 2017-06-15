@@ -30,7 +30,7 @@ public class sm_dictionary {
        
     @Column(name="required")
     @Type(type = "com.RuleEngine.types.BooleanArrayType")
-    private String[] required;
+    private Boolean[] required;
     
     @OneToMany(mappedBy="dictionary_id",cascade=CascadeType.ALL)
     private Set<sm_link_properties> dictionary_id_links;
@@ -103,13 +103,13 @@ public class sm_dictionary {
 
 
 
-	public String[] getRequired() {
+	public Boolean[] getRequired() {
 		return required;
 	}
 
 
 
-	public void setRequired(String[] required) {
+	public void setRequired(Boolean[] required) {
 		this.required = required;
 	}
 

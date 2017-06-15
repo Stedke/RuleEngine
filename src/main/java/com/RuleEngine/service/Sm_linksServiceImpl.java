@@ -51,4 +51,7 @@ public class Sm_linksServiceImpl implements Sm_linksService{
 		}else
 			return false;
 	}
+	public Integer getChosenSm_linkId() {
+		return chosenSm_linkId;
+	}
 }
