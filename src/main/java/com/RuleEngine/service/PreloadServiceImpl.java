@@ -49,7 +49,9 @@ public class PreloadServiceImpl implements PreloadService {
 	@Transactional
 	public void preloadData(Long linkId){
 		sm_link_properties = sm_link_propertiesDAO.getSm_link_properties(linkId);
+		
 		sm_segments = sm_segmentsDAO.getSm_segments(linkId);
+		
 		sm_nodes = sm_nodesDAO.getSm_nodesFromLink(linkId);
 		sm_nodes.addAll(sm_nodesDAO.getSm_nodesFromLinkProximity(linkId, new Integer(5)));
 		
