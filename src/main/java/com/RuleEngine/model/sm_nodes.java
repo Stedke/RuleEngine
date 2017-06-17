@@ -81,5 +81,17 @@ public class sm_nodes {
     public String toString() {
         return String.format("User id: %d", getId());
     }
+	
+	@Override
+	public boolean equals(Object obj){
+	    if (this == obj)
+	        return true;
+	    if (obj == null)
+	        return false;
+	    if (getClass() != obj.getClass())
+	        return false;
+	    sm_nodes node = (sm_nodes)obj;
+	    return id == node.id;
+	}
 }
 

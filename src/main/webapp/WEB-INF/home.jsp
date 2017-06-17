@@ -11,10 +11,6 @@
 <h1>Home page</h1>
 <p>
 ${message}<br/>
-<a href="${pageContext.request.contextPath}/sm_nodes/list.html">sm_nodes</a><br/>
-</p>
-<p>
-${message}<br/>
 <a href="${pageContext.request.contextPath}/sm_links/listOfLinks.html">listOfLinks</a><br/>
 </p>
 <p>

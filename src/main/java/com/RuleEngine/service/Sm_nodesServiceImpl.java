@@ -1,5 +1,6 @@
 package com.RuleEngine.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ public class Sm_nodesServiceImpl implements Sm_nodesService {
 
 	@Transactional
 	public List<sm_nodes> getSm_nodes() {
-		return sm_nodesDAO.getSm_nodes();
+		return new ArrayList<sm_nodes>();
 	}
 }
 

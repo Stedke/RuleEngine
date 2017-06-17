@@ -78,6 +78,61 @@
 </tbody>
 </table>
 
+<p>List of sm_node_properties</p>
+<table border="1px" cellpadding="0" cellspacing="0" >
+<thead>
+<tr>
+<th width="15%">id</th><th width="30%">dictionary_id</th><th width="30%">tags</th>
+</tr>
+</thead>
+<tbody>
+<c:forEach var="sm_node_properties" items="${sm_node_properties}">
+<tr>
+	<td>${sm_node_properties.id}</td>
+	<td>${sm_node_properties.dictionary_id.id}</td>
+	<td>
+	<c:forEach var="sm_node_properties_tags" items="${sm_node_properties.tags}">
+	    ' ' <c:out value = "${sm_node_properties_tags}"/>
+	</c:forEach>
+	</td>
+</tr>
+</c:forEach>
+</tbody>
+</table>
+
+<p>List of sm_segments</p>
+<table border="1px" cellpadding="0" cellspacing="0" >
+<thead>
+<tr>
+<th width="15%">id</th><th width="30%">geom</th>
+</tr>
+</thead>
+<tbody>
+<c:forEach var="sm_segments" items="${sm_segments}">
+<tr>
+	<td>${sm_segments.id}</td>
+	<td>${sm_segments.geom}</td>
+</tr>
+</c:forEach>
+</tbody>
+</table>
+
+<p>List of sm_nodes</p>
+<table border="1px" cellpadding="0" cellspacing="0" >
+<thead>
+<tr>
+<th width="15%">id</th><th width="30%">geom</th>
+</tr>
+</thead>
+<tbody>
+<c:forEach var="sm_nodes" items="${sm_nodes}">
+<tr>
+	<td>${sm_nodes.id}</td>
+	<td>${sm_nodes.geom}</td>
+</tr>
+</c:forEach>
+</tbody>
+</table>
 
 <p><a href="${pageContext.request.contextPath}/index.html">Home page</a></p>
 

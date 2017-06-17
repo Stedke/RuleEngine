@@ -4,7 +4,10 @@ import java.util.List;
 
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_link_properties;
+import com.RuleEngine.model.sm_node_properties;
+import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.model.sm_segment_properties;
+import com.RuleEngine.model.sm_segments;
 
 public interface PreloadService {
 
@@ -15,4 +18,10 @@ public interface PreloadService {
 	public void setSm_dictionary(List<sm_dictionary> sm_dictionary);
 	public List<sm_segment_properties> getSm_segment_properties();
 	public void setSm_segment_properties(List<sm_segment_properties> sm_segment_properties);
+	public List<sm_node_properties> getSm_node_properties();
+	public void setSm_node_properties(List<sm_node_properties> sm_node_properties);
+	public List<sm_segments> getSm_segments();
+	public void setSm_segments(List<sm_segments> sm_segments);
+	public List<sm_nodes> getSm_nodes();
+	public void setSm_nodes(List<sm_nodes> sm_nodes);
 }

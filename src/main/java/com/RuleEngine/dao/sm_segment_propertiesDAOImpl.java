@@ -10,7 +10,6 @@ import com.RuleEngine.model.sm_segment_properties;
 
 @Repository
 public class sm_segment_propertiesDAOImpl implements sm_segment_propertiesDAO{
-
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -26,5 +25,4 @@ public class sm_segment_propertiesDAOImpl implements sm_segment_propertiesDAO{
 		stringBuilder.append(segmentId.toString()); 
 		return getCurrentSession().createSQLQuery(stringBuilder.toString()).addEntity(sm_segment_properties.class).list();
 	}
-
 }
