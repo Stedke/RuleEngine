@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_link_properties;
+import com.RuleEngine.model.sm_segment_properties;
 
 public interface PreloadService {
 
@@ -12,4 +13,6 @@ public interface PreloadService {
 	public void setSm_link_properties(List<sm_link_properties> sm_link_properties);
 	public List<sm_dictionary> getSm_dictionary();
 	public void setSm_dictionary(List<sm_dictionary> sm_dictionary);
+	public List<sm_segment_properties> getSm_segment_properties();
+	public void setSm_segment_properties(List<sm_segment_properties> sm_segment_properties);
 }

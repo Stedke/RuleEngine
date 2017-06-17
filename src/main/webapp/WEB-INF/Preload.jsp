@@ -38,13 +38,14 @@
 <table border="1px" cellpadding="0" cellspacing="0" >
 <thead>
 <tr>
-<th width="15%">id</th><th width="30%">tags</th>
+<th width="15%">id</th><th width="30%">dictionary_id</th><th width="30%">tags</th>
 </tr>
 </thead>
 <tbody>
 <c:forEach var="sm_link_properties" items="${sm_link_properties}">
 <tr>
 	<td>${sm_link_properties.id}</td>
+	<td>${sm_link_properties.dictionary_id.id}</td>
 	<td>
 	<c:forEach var="sm_link_properties_tags" items="${sm_link_properties.tags}">
 	    ' ' <c:out value = "${sm_link_properties_tags}"/>
@@ -54,6 +55,29 @@
 </c:forEach>
 </tbody>
 </table>
+
+<p>List of sm_segment_properties</p>
+<table border="1px" cellpadding="0" cellspacing="0" >
+<thead>
+<tr>
+<th width="15%">id</th><th width="30%">dictionary_id</th><th width="30%">tags</th>
+</tr>
+</thead>
+<tbody>
+<c:forEach var="sm_segment_properties" items="${sm_segment_properties}">
+<tr>
+	<td>${sm_segment_properties.id}</td>
+	<td>${sm_segment_properties.dictionary_id.id}</td>
+	<td>
+	<c:forEach var="sm_segment_properties_tags" items="${sm_segment_properties.tags}">
+	    ' ' <c:out value = "${sm_segment_properties_tags}"/>
+	</c:forEach>
+	</td>
+</tr>
+</c:forEach>
+</tbody>
+</table>
+
 
 <p><a href="${pageContext.request.contextPath}/index.html">Home page</a></p>
 

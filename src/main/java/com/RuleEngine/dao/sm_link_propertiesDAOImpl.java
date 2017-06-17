@@ -15,7 +15,6 @@ public class sm_link_propertiesDAOImpl implements sm_link_propertiesDAO{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	
 	private Session getCurrentSession() {
 		return sessionFactory.getCurrentSession();
 	}
