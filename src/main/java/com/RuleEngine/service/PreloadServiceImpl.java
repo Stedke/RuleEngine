@@ -14,6 +14,8 @@ import com.RuleEngine.dao.sm_dictionaryDAO;
 import com.RuleEngine.model.sm_link_properties;
 import com.RuleEngine.model.sm_segment_properties;
 import com.RuleEngine.model.sm_dictionary;
+import com.RuleEngine.model.sm_segments;
+import com.RuleEngine.dao.sm_segmentsDAO;
 
 @Service
 public class PreloadServiceImpl implements PreloadService {
@@ -24,15 +26,23 @@ public class PreloadServiceImpl implements PreloadService {
 	private sm_segment_propertiesDAO sm_segment_propertiesDAO;
 	@Autowired
 	private sm_dictionaryDAO sm_dictionaryDAO;
+	@Autowired
+	private sm_segmentsDAO sm_segmentsDAO;
 	
 	private List<sm_link_properties> sm_link_properties;
-	private List<sm_segment_properties> sm_segment_properties;
+	private List<sm_segments> sm_segments;
+	private List<sm_segment_properties> sm_segment_properties = new ArrayList<sm_segment_properties>();;
 	private List<sm_dictionary> sm_dictionary = new ArrayList<sm_dictionary>();
 
 	@Transactional
 	public void preloadData(Long linkId){
 		sm_link_properties = sm_link_propertiesDAO.getSm_link_properties(linkId);
-		sm_segment_properties = sm_segment_propertiesDAO.getSm_segment_properties(linkId);
+		sm_segments = sm_segmentsDAO.getSm_segments(linkId);
+		
+		for(sm_segments segments : sm_segments){
+			sm_segment_properties.addAll(sm_segment_propertiesDAO.getSm_segment_properties(segments.getId()));
+		}
+		
 		HashMap<Long,Long> dictionary_id = new HashMap<Long,Long>();
 		
 	       for(sm_link_properties links_properties : sm_link_properties) {

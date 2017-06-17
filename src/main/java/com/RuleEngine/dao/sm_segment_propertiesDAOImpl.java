@@ -20,11 +20,10 @@ public class sm_segment_propertiesDAOImpl implements sm_segment_propertiesDAO{
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<sm_segment_properties> getSm_segment_properties(Long linkId) {
+	public List<sm_segment_properties> getSm_segment_properties(Long segmentId) {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("SELECT * FROM sm_segment_properties AS properties WHERE properties.segment_id = (SELECT id FROM sm_segments AS segments WHERE segments.link_id = ");
-		stringBuilder.append(linkId.toString());
-		stringBuilder.append(")");	 
+		stringBuilder.append("SELECT * FROM sm_segment_properties AS properties WHERE properties.segment_id = ");
+		stringBuilder.append(segmentId.toString()); 
 		return getCurrentSession().createSQLQuery(stringBuilder.toString()).addEntity(sm_segment_properties.class).list();
 	}
 
