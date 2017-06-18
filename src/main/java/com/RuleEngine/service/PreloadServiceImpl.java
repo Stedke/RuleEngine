@@ -46,9 +46,12 @@ public class PreloadServiceImpl implements PreloadService {
 	private List<sm_segment_properties> sm_segment_properties = new ArrayList<sm_segment_properties>();
 	private List<sm_node_properties> sm_node_properties = new ArrayList<sm_node_properties>();
 	private List<sm_dictionary> sm_dictionary = new ArrayList<sm_dictionary>();
+	private Long linkId;
 
 	@Transactional
 	public void preloadData(Long linkId){
+		this.linkId = linkId;
+		
 		sm_link_properties = sm_link_propertiesDAO.getSm_link_properties(linkId);
 		
 		sm_segments = sm_segmentsDAO.getSm_segments(linkId);
@@ -97,6 +100,7 @@ public class PreloadServiceImpl implements PreloadService {
 		temp.setSm_nodes(sm_nodes);
 		temp.setSm_segment_properties(sm_segment_properties);
 		temp.setSm_segments(sm_segments);
+		temp.setLinkId(linkId);
 		return temp;
 	}
 
