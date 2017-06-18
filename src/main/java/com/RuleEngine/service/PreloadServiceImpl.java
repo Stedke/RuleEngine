@@ -17,6 +17,7 @@ import com.RuleEngine.dao.sm_dictionaryDAO;
 import com.RuleEngine.model.sm_link_properties;
 import com.RuleEngine.model.sm_segment_properties;
 import com.RuleEngine.model.sm_node_properties;
+import com.RuleEngine.model.ruleData;
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_segments;
 import com.RuleEngine.model.sm_nodes;
@@ -85,6 +86,18 @@ public class PreloadServiceImpl implements PreloadService {
 	    	   sm_dictionary.add(sm_dictionaryDAO.getSm_dictionary(d_id));
 	       }
 	       
+	}
+	
+	@Override
+	public ruleData transferData() {
+		ruleData temp = new ruleData();
+		temp.setSm_dictionary(sm_dictionary);
+		temp.setSm_link_properties(sm_link_properties);
+		temp.setSm_node_properties(sm_node_properties);
+		temp.setSm_nodes(sm_nodes);
+		temp.setSm_segment_properties(sm_segment_properties);
+		temp.setSm_segments(sm_segments);
+		return temp;
 	}
 
 	public List<sm_link_properties> getSm_link_properties() {

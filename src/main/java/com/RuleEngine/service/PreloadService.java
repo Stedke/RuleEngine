@@ -2,6 +2,7 @@ package com.RuleEngine.service;
 
 import java.util.List;
 
+import com.RuleEngine.model.ruleData;
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_link_properties;
 import com.RuleEngine.model.sm_node_properties;
@@ -24,4 +25,5 @@ public interface PreloadService {
 	public void setSm_segments(List<sm_segments> sm_segments);
 	public List<sm_nodes> getSm_nodes();
 	public void setSm_nodes(List<sm_nodes> sm_nodes);
+	public ruleData transferData();
 }
