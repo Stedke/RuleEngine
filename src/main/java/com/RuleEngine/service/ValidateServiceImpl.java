@@ -3,6 +3,8 @@ package com.RuleEngine.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieScanner;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +24,24 @@ public class ValidateServiceImpl implements ValidateService{
 	private ruleData ruleData = new ruleData();
     private ruleData missingRuleData = new ruleData();
 	
-	@Autowired
 	private KieContainer kieContainer;
+	private KieScanner kieScanner;
 
 	@Override
 	public void fireValidateRules() {
-		//KieSession kieSession = kieContainer.newKieSession();
-		//fire validation rules. Different kieContainer might be needed.
-		//Validation rule should add element to sm_dictionary missing list
-		//(if not sm_dictionary, name=bleble then missing add bleble).
-		//kieSession.dispose();
-		sm_dictionary dict = new sm_dictionary();
-		dict.setId(new Long(5));
-		dict.setName("temp name");
-		List<sm_dictionary> temp = new ArrayList<sm_dictionary>();
-		temp.add(dict);
-		missingRuleData.setSm_dictionary(temp);
+		KieServices ks = KieServices.Factory.get();
+		kieContainer = ks.newKieContainer(ks.newReleaseId("com.RuleEngine", "ValidateRuleEngine", "1.0.0"));
+    	kieScanner = ks.newKieScanner(kieContainer);
+    	kieScanner.start(130000);
+		KieSession kieSession = kieContainer.newKieSession();
+		
+		for(sm_dictionary dictionary : ruleData.getSm_dictionary() ){
+			kieSession.insert(dictionary);
+		}
+		
+		kieSession.fireAllRules();
+	
+		kieSession.dispose();
 	}
 
 	@Override
