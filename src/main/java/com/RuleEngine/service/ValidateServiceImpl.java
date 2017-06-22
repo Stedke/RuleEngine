@@ -6,6 +6,7 @@ import java.util.List;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.RuleEngine.model.ruleData;
 import com.RuleEngine.model.sm_dictionary;
@@ -15,6 +16,7 @@ import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.model.sm_segment_properties;
 import com.RuleEngine.model.sm_segments;
 
+@Service
 public class ValidateServiceImpl implements ValidateService{
 
 	private ruleData ruleData = new ruleData();
@@ -25,11 +27,17 @@ public class ValidateServiceImpl implements ValidateService{
 
 	@Override
 	public void fireValidateRules() {
-		KieSession kieSession = kieContainer.newKieSession();
+		//KieSession kieSession = kieContainer.newKieSession();
 		//fire validation rules. Different kieContainer might be needed.
 		//Validation rule should add element to sm_dictionary missing list
 		//(if not sm_dictionary, name=bleble then missing add bleble).
-		kieSession.dispose();
+		//kieSession.dispose();
+		sm_dictionary dict = new sm_dictionary();
+		dict.setId(new Long(5));
+		dict.setName("temp name");
+		List<sm_dictionary> temp = new ArrayList<sm_dictionary>();
+		temp.add(dict);
+		missingRuleData.setSm_dictionary(temp);
 	}
 
 	@Override
@@ -97,6 +105,14 @@ public class ValidateServiceImpl implements ValidateService{
 		this.missingRuleData.setSm_segments(s_temp);
 		this.missingRuleData.setSm_segment_properties(sp_temp);
 		this.missingRuleData.setSm_link_properties(lp_temp);
+	}
+
+	public ruleData getMissingRuleData() {
+		return missingRuleData;
+	}
+
+	public void setMissingRuleData(ruleData missingRuleData) {
+		this.missingRuleData = missingRuleData;
 	}
 
 }

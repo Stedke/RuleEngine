@@ -1,15 +1,16 @@
 package com.RuleEngine.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ruleData {
 
-	private List<sm_nodes> sm_nodes;
-	private List<sm_segments> sm_segments;
-	private List<sm_dictionary> sm_dictionary;
-	private List<sm_node_properties> sm_node_properties;
-	private List<sm_segment_properties> sm_segment_properties;
-	private List<sm_link_properties> sm_link_properties;
+	private List<sm_nodes> sm_nodes = new ArrayList<sm_nodes>();
+	private List<sm_segments> sm_segments = new ArrayList<sm_segments>();
+	private List<sm_dictionary> sm_dictionary = new ArrayList<sm_dictionary>();
+	private List<sm_node_properties> sm_node_properties = new ArrayList<sm_node_properties>();
+	private List<sm_segment_properties> sm_segment_properties = new ArrayList<sm_segment_properties>();
+	private List<sm_link_properties> sm_link_properties = new ArrayList<sm_link_properties>();
 	private Long linkId;
 	
 	public List<sm_nodes> getSm_nodes() {

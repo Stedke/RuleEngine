@@ -23,7 +23,7 @@ public class validateController {
 		ValidateService.setData(PreloadService.transferData());
 		ValidateService.fireValidateRules();
 		
-		//show all missing data
+		modelAndView.addObject("sm_dictionary", ValidateService.getMissingRuleData().getSm_dictionary());
 		
 		return modelAndView;
 	}

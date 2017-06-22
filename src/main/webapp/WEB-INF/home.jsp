@@ -23,6 +23,10 @@ ${message}<br/>
 </p>
 <p>
 ${message}<br/>
+<a href="${pageContext.request.contextPath}/validate/Validate.html">Validate</a><br/>
+</p>
+<p>
+${message}<br/>
 <a href="${pageContext.request.contextPath}/velocity/Velocity.html">Determine velocity</a><br/>
 </p>
 </body>
