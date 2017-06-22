@@ -4,26 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import com.RuleEngine.service.RuleService;
 import com.RuleEngine.service.ValidateService;
+import com.RuleEngine.service.PreloadService;
 
 @Controller
-@RequestMapping(value="/velocity")
-public class velocityController {
+@RequestMapping(value="/validate")
+public class validateController {
 	
-	@Autowired
-	private RuleService RuleService;
 	@Autowired
 	private ValidateService ValidateService;
+	@Autowired
+	private PreloadService PreloadService;
 	
-	@RequestMapping(value="/Velocity")
-	public ModelAndView Velocity() {
-		ModelAndView modelAndView = new ModelAndView("Velocity");
+	@RequestMapping(value="/Validate")
+	public ModelAndView Validate() {
+		ModelAndView modelAndView = new ModelAndView("Validate");
 		
-		RuleService.transferData(ValidateService.transferData());
-		RuleService.fireRules();
+		ValidateService.setData(PreloadService.transferData());
+		ValidateService.fireValidateRules();
 		
-		//show velocity
+		//show all missing data
 		
 		return modelAndView;
 	}

@@ -25,7 +25,7 @@ public class RuleServiceImpl implements RuleService {
 	@Autowired
 	private KieContainer kieContainer;
 	
-	public void testDrools(){
+	public void fireRules(){
         KieSession kieSession = kieContainer.newKieSession();//"ksession-rules");
         //kieSession.insert(sm_nodes.get(0));
         //kieSession.fireAllRules();
