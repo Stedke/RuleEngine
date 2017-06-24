@@ -17,6 +17,7 @@ import com.RuleEngine.model.sm_node_properties;
 import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.model.sm_segment_properties;
 import com.RuleEngine.model.sm_segments;
+import com.RuleEngine.model.missingItemsList;
 
 @Service
 public class ValidateServiceImpl implements ValidateService{
@@ -26,22 +27,37 @@ public class ValidateServiceImpl implements ValidateService{
 	
 	private KieContainer kieContainer;
 	private KieScanner kieScanner;
-
+ 
 	@Override
 	public void fireValidateRules() {
 		KieServices ks = KieServices.Factory.get();
 		kieContainer = ks.newKieContainer(ks.newReleaseId("com.RuleEngine", "ValidateRuleEngine", "1.0.0"));
     	kieScanner = ks.newKieScanner(kieContainer);
     	kieScanner.start(130000);
+    	
+    	missingItemsList missingItemsList = new missingItemsList();
+    	
 		KieSession kieSession = kieContainer.newKieSession();
+		kieSession.setGlobal("missingIdsList", missingItemsList);
 		
 		for(sm_dictionary dictionary : ruleData.getSm_dictionary() ){
 			kieSession.insert(dictionary);
 		}
 		
 		kieSession.fireAllRules();
-	
 		kieSession.dispose();
+		
+ 		List<sm_dictionary> d_temp = new ArrayList<sm_dictionary>();
+		for(String name : missingItemsList.getMissingIds()){
+			sm_dictionary temp = new sm_dictionary();
+			temp.setName(name);
+			temp.setDescription("");
+			String[] t = new String[]{""};
+			temp.setKey(t);
+			temp.setId(new Long(0));
+			d_temp.add(temp);
+		}
+		this.missingRuleData.setSm_dictionary(d_temp);
 	}
 
 	@Override
