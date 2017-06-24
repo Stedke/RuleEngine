@@ -88,7 +88,6 @@ public class PreloadServiceImpl implements PreloadService {
 	       for(Long d_id : dictionary_id.keySet()) {
 	    	   sm_dictionary.add(sm_dictionaryDAO.getSm_dictionary(d_id));
 	       }
-	       
 	}
 	
 	@Override

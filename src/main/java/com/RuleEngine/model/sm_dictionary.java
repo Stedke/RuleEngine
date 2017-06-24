@@ -41,115 +41,77 @@ public class sm_dictionary {
 
     public sm_dictionary() {}
 
-
-
 	public Long getId() {
 		return id;
 	}
-
-
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-
-
 	public String getName() {
 		return name;
 	}
-
-
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-
-
 	public String getDescription() {
 		return description;
 	}
-
-
 
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-
-
 	public String[] getKey() {
 		return key;
 	}
-
-
 
 	public void setKey(String[] key) {
 		this.key = key;
 	}
 
-
-
 	public String[] getDatatypes() {
 		return datatypes;
 	}
-
-
 
 	public void setDatatypes(String[] datatypes) {
 		this.datatypes = datatypes;
 	}
 
-
-
 	public Boolean[] getRequired() {
 		return required;
 	}
-
-
 
 	public void setRequired(Boolean[] required) {
 		this.required = required;
 	}
 
-
-
 	public Set<sm_link_properties> getDictionary_id_links() {
 		return dictionary_id_links;
 	}
-
-
 
 	public void setDictionary_id_links(Set<sm_link_properties> dictionary_id_links) {
 		this.dictionary_id_links = dictionary_id_links;
 	}
 
-
-
 	public Set<sm_segment_properties> getDictionary_id_segments() {
 		return dictionary_id_segments;
 	}
-
-
 
 	public void setDictionary_id_segments(Set<sm_segment_properties> dictionary_id_segments) {
 		this.dictionary_id_segments = dictionary_id_segments;
 	}
 
-
-
 	public Set<sm_node_properties> getDictionary_id_nodes() {
 		return dictionary_id_nodes;
 	}
 
-
-
 	public void setDictionary_id_nodes(Set<sm_node_properties> dictionary_id_nodes) {
 		this.dictionary_id_nodes = dictionary_id_nodes;
 	}
-
-
 
 	@Override
     public String toString() {
