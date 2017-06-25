@@ -117,4 +117,16 @@ public class sm_dictionary {
     public String toString() {
         return String.format("User id: %d", getId());
     }
+	
+	@Override
+	public boolean equals(Object obj){
+	    if (this == obj)
+	        return true;
+	    if (obj == null)
+	        return false;
+	    if (getClass() != obj.getClass())
+	        return false;
+	    sm_dictionary dictionary = (sm_dictionary)obj;
+	    return name.equals(dictionary.name);
+	}
 }

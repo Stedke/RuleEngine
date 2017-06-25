@@ -36,7 +36,7 @@
 
 <p>
 ${message}<br/>
-<a href="${pageContext.request.contextPath}/addElement/sm_dictionary.html">sm_dictionary</a><br/>
+<a href="${pageContext.request.contextPath}/sm_dictionary.html">sm_dictionary</a><br/>
 </p>
 <p>
 ${message}<br/>
