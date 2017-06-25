@@ -20,10 +20,18 @@ public class velocityController {
 	public ModelAndView Velocity() {
 		ModelAndView modelAndView = new ModelAndView("Velocity");
 		
-		RuleService.transferData(ValidateService.transferData());
-		RuleService.fireRules();
+		Boolean isSuccessful = new Boolean(false);
+		Integer velocity = new Integer(0);
 		
-		//show velocity
+		isSuccessful=ValidateService.checkIfDataOk();
+		
+		if(isSuccessful){
+			RuleService.transferData(ValidateService.transferData());
+			RuleService.fireRules();
+		}
+		
+		modelAndView.addObject("velocity", velocity);
+		modelAndView.addObject("isSuccessful", isSuccessful);
 		
 		return modelAndView;
 	}

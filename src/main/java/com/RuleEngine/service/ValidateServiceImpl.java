@@ -1,6 +1,7 @@
 package com.RuleEngine.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.kie.api.KieServices;
@@ -112,10 +113,10 @@ public class ValidateServiceImpl implements ValidateService{
 		List<sm_segment_properties> sp_temp = this.missingRuleData.getSm_segment_properties();
 		List<sm_link_properties> lp_temp = this.missingRuleData.getSm_link_properties();
 		
-		d_temp.removeAll(dataInserted.getSm_dictionary());
-		n_temp.removeAll(dataInserted.getSm_nodes());
-		np_temp.removeAll(dataInserted.getSm_node_properties());
-		s_temp.removeAll(dataInserted.getSm_segments());
+		boolean changed_d = d_temp.removeAll(dataInserted.getSm_dictionary()); 	
+		n_temp.removeAll(dataInserted.getSm_nodes());				
+		np_temp.removeAll(dataInserted.getSm_node_properties()); 	
+		s_temp.removeAll(dataInserted.getSm_segments());				
 		sp_temp.removeAll(dataInserted.getSm_segment_properties());
 		lp_temp.removeAll(dataInserted.getSm_link_properties());
 		
@@ -125,6 +126,14 @@ public class ValidateServiceImpl implements ValidateService{
 		this.missingRuleData.setSm_segments(s_temp);
 		this.missingRuleData.setSm_segment_properties(sp_temp);
 		this.missingRuleData.setSm_link_properties(lp_temp);
+		
+		if(changed_d 
+				|| !dataInserted.getSm_link_properties().isEmpty()
+				|| !dataInserted.getSm_node_properties().isEmpty()
+				|| !dataInserted.getSm_nodes().isEmpty()
+				|| !dataInserted.getSm_segment_properties().isEmpty()
+				|| !dataInserted.getSm_segments().isEmpty())
+			setData(dataInserted);
 	}
 
 	public ruleData getMissingRuleData() {
@@ -135,4 +144,57 @@ public class ValidateServiceImpl implements ValidateService{
 		this.missingRuleData = missingRuleData;
 	}
 
+	@Override
+	public Long getNextSm_dictionaryId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_dictionary dictionary : ruleData.getSm_dictionary()){
+			temp.add(dictionary.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+
+	@Override
+	public Long getNextSm_nodesId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_nodes node : ruleData.getSm_nodes()){
+			temp.add(node.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+
+	@Override
+	public Long getNextSm_segmentsId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_segments segment : ruleData.getSm_segments()){
+			temp.add(segment.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+
+	@Override
+	public Long getNextSm_node_propertiesId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_node_properties prop : ruleData.getSm_node_properties()){
+			temp.add(prop.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+
+	@Override
+	public Long getNextSm_segment_propertiesId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_segment_properties prop : ruleData.getSm_segment_properties()){
+			temp.add(prop.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+
+	@Override
+	public Long getNextSm_link_propertiesId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_link_properties prop : ruleData.getSm_link_properties()){
+			temp.add(prop.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
 }

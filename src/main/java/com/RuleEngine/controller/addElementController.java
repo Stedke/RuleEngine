@@ -13,8 +13,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.RuleEngine.model.sm_dictionary;
+import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.service.ValidateService;
 import com.RuleEngine.wrappers.sm_dictionaryWrapper;
+import com.RuleEngine.wrappers.sm_nodesWrapper;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.util.GeometricShapeFactory;
 import com.RuleEngine.model.ruleData;
 
 @Controller
@@ -34,6 +40,7 @@ public class addElementController {
     public ModelAndView addSm_dictionary() {
     	ModelAndView modelAndView = new ModelAndView("sm_dictionary","command",new sm_dictionaryWrapper());
     	modelAndView.addObject("missing_dictionary", ValidateService.getMissingRuleData().getSm_dictionary());
+    	modelAndView.addObject("sm_dictionary_id", ValidateService.getNextSm_dictionaryId());
     	
         return modelAndView;
     }
@@ -63,13 +70,51 @@ public class addElementController {
     	dictionary.setRequired(temp3);
     	dictionary.setName(dictionaryWrapper.getName());
     	dictionary.setDescription(dictionaryWrapper.getDescription());
+    	dictionary.setId(ValidateService.getNextSm_dictionaryId());
+    		
+        List<sm_dictionary> temp5 = new ArrayList<sm_dictionary>();
+        temp5.add(dictionary);
+        ruleData ruleData = new ruleData();
+        ruleData.setSm_dictionary(temp5);
+        
+        ValidateService.missingDataInserted(ruleData);
     	
-    	List<sm_dictionary> temp4 = new ArrayList<sm_dictionary>();
-    	temp4.add(dictionary);
-    	ruleData ruleData = new ruleData();
-    	ruleData.setSm_dictionary(temp4);
+    	return "result3";
+    }
     
-    	ValidateService.missingDataInserted(ruleData);
+    @RequestMapping(value="/sm_nodes", method = RequestMethod.GET)
+    public ModelAndView addSm_nodes() {
+    	ModelAndView modelAndView = new ModelAndView("sm_nodes","command",new sm_nodesWrapper());
+    	modelAndView.addObject("sm_nodes_id", ValidateService.getNextSm_nodesId());
+    	
+        return modelAndView;
+    }
+    
+    @RequestMapping(value = "/addSm_nodes", method = RequestMethod.POST)
+    public String addSm_nodesForm(@ModelAttribute("sm_nodesWrapper")sm_nodesWrapper nodesWrapper,
+        ModelMap model) {
+    	
+    	model.addAttribute("geom", nodesWrapper.getGeom());
+    	model.addAttribute("osm_node", nodesWrapper.getOsm_node());
+    	
+    	ArrayList<String> geom = new ArrayList<String>(Arrays.asList(nodesWrapper.getGeom().split(";")));
+    	ArrayList<Double> geomd = new ArrayList<Double>();
+    	for(String str : geom){
+    		geomd.add(Double.parseDouble(str));
+    	}
+    	
+    	sm_nodes nodes = new sm_nodes();
+    	Point point = new GeometryFactory().createPoint(new Coordinate(geomd.get(0),geomd.get(1)));
+    	
+    	nodes.setGeom(point);
+    	nodes.setId(ValidateService.getNextSm_nodesId());
+    	
+        List<sm_nodes> temp = new ArrayList<sm_nodes>();
+        temp.add(nodes);
+        ruleData ruleData = new ruleData();
+        ruleData.setSm_nodes(temp);
+        
+        ValidateService.missingDataInserted(ruleData);
     	
     	return "result3";
     }

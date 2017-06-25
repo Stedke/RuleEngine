@@ -32,12 +32,37 @@
 		<td><form:input path = "required" /></td>
 	</tr>
 	<tr>
-		<td colspan = "4">
+		<td colspan = "3">
 			<input type = "submit" value = "Submit"/>
 		</td>
 	</tr>
 	</table>
-
       </form:form>
+      
+      <p>Missing sm_dictionary</p>
+	<table border="1px" cellpadding="0" cellspacing="0" >
+<thead>
+<tr>
+	<th width="15%">id</th><th width="30%">name</th><th width="30%">keys</th>
+</tr>
+</thead>
+<tbody>
+<c:forEach var="missing_dictionary" items="${missing_dictionary}">
+<tr>
+	<td>${missing_dictionary.id}</td>
+	<td>${missing_dictionary.name}</td>
+	<td>
+		<c:forEach var="missing_dictionary_key" items="${missing_dictionary.key}">
+   		' ' <c:out value = "${missing_dictionary_key}"/>
+		</c:forEach>
+	</td>
+</tr>
+</c:forEach>
+</tbody>
+</table>
+
+<p>New dictionary id</p>
+<p>${sm_dictionary_id}</p>
+
    </body>   
 </html>
