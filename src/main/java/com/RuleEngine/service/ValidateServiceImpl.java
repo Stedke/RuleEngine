@@ -197,4 +197,24 @@ public class ValidateServiceImpl implements ValidateService{
 		}
 		return (Collections.max(temp)+1);
 	}
+
+	@Override
+	public sm_nodes getSm_nodes(Long id) {
+		for(sm_nodes node : ruleData.getSm_nodes()){
+			if(node.getId() == id){
+				return node;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public sm_dictionary getSm_dictionary(Long id) {
+		for(sm_dictionary dictionary : ruleData.getSm_dictionary()){
+			if(dictionary.getId() == id){
+				return dictionary;
+			}
+		}
+		return null;
+	}
 }

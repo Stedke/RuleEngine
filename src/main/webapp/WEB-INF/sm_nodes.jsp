@@ -3,11 +3,11 @@
 
 <html>
    <head>
-      <title>Add sm_dictionary</title>
+      <title>Add sm_nodes</title>
    </head>
 
    <body>
-      <h2>Add sm_dictionary</h2>
+      <h2>Add sm_nodes</h2>
       <form:form method = "POST" action = "/RuleEngine/addSm_nodes">
 
 	<table>

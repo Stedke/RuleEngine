@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.RuleEngine.model.sm_dictionary;
+import com.RuleEngine.model.sm_node_properties;
 import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.service.ValidateService;
 import com.RuleEngine.wrappers.sm_dictionaryWrapper;
+import com.RuleEngine.wrappers.sm_node_propertiesWrapper;
 import com.RuleEngine.wrappers.sm_nodesWrapper;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -115,6 +117,50 @@ public class addElementController {
         ruleData.setSm_nodes(temp);
         
         ValidateService.missingDataInserted(ruleData);
+    	
+    	return "result3";
+    }
+    
+    @RequestMapping(value="/sm_node_properties", method = RequestMethod.GET)
+    public ModelAndView addSm_node_properties() {
+    	ModelAndView modelAndView = new ModelAndView("sm_node_properties","command",new sm_node_propertiesWrapper());
+    	modelAndView.addObject("sm_node_properties_id", ValidateService.getNextSm_node_propertiesId());
+    	
+        return modelAndView;
+    }
+    
+    @RequestMapping(value = "/addSm_node_properties", method = RequestMethod.POST)
+    public String addSm_node_propertiesForm(@ModelAttribute("sm_node_propertiesWrapper")sm_node_propertiesWrapper propWrapper,
+        ModelMap model) {
+        
+    	model.addAttribute("node_id", propWrapper.getNode_id());
+    	model.addAttribute("tags", propWrapper.getTags());
+    	model.addAttribute("description", propWrapper.getDescription());
+    	model.addAttribute("dictionary_id", propWrapper.getDictionary_id());
+    	
+    	
+    	sm_node_properties props = new sm_node_properties();
+    	
+    	props.setDescription(propWrapper.getDescription());
+    	props.setId(ValidateService.getNextSm_node_propertiesId());
+    	props.setTags(propWrapper.getTags().split(";"));
+    	
+    	sm_nodes temp1 = ValidateService.getSm_nodes(Long.parseLong(propWrapper.getNode_id()));
+    	if(temp1 != null){
+    		props.setNode_id(temp1);
+    		
+    		sm_dictionary temp2 = ValidateService.getSm_dictionary(Long.parseLong(propWrapper.getDictionary_id()));
+    		if(temp2 != null){
+    			props.setDictionary_id(temp2);
+    			
+    	        List<sm_node_properties> temp3 = new ArrayList<sm_node_properties>();
+    	        temp3.add(props);
+    	        ruleData ruleData = new ruleData();
+    	        ruleData.setSm_node_properties(temp3);
+    	        
+    	        ValidateService.missingDataInserted(ruleData);
+    		}
+    	}
     	
     	return "result3";
     }
