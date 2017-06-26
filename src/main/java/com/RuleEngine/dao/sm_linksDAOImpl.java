@@ -48,4 +48,12 @@ public class sm_linksDAOImpl implements sm_linksDAO  {
 		System.out.println(polygon);
 		return getCurrentSession().createSQLQuery(polygon).addEntity(sm_links.class).list();
 	}
+
+	@SuppressWarnings({ "unchecked", "deprecation" })
+	public List<sm_links> getChosenSm_link(Integer linkId) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("SELECT * FROM sm_links AS links WHERE links.id = ");
+		stringBuilder.append(linkId.toString());
+		return getCurrentSession().createSQLQuery(stringBuilder.toString()).addEntity(sm_links.class).list();
+	}
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.RuleEngine.model.ruleData;
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_link_properties;
+import com.RuleEngine.model.sm_links;
 import com.RuleEngine.model.sm_node_properties;
 import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.model.sm_segment_properties;
@@ -28,6 +29,9 @@ public class ValidateServiceImpl implements ValidateService{
 	
 	private KieContainer kieContainer;
 	private KieScanner kieScanner;
+	
+	@Autowired
+	Sm_linksService Sm_linksService;
  
 	@Override
 	public void fireValidateRules() {
@@ -210,11 +214,16 @@ public class ValidateServiceImpl implements ValidateService{
 	
 	@Override
 	public sm_dictionary getSm_dictionary(Long id) {
-		for(sm_dictionary dictionary : ruleData.getSm_dictionary()){
+		for(sm_dictionary dictionary : ruleData.getSm_dictionary()){ 
 			if(dictionary.getId() == id){
 				return dictionary;
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public sm_links getSm_link() {
+		return Sm_linksService.getChosenSm_link();
 	}
 }

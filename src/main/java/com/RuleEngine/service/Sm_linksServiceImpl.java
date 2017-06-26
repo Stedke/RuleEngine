@@ -54,4 +54,9 @@ public class Sm_linksServiceImpl implements Sm_linksService{
 	public Integer getChosenSm_linkId() {
 		return chosenSm_linkId;
 	}
+	@Transactional
+	public sm_links getChosenSm_link() {
+		List<sm_links> links = sm_linksDAO.getChosenSm_link(chosenSm_linkId);
+		return links.get(0);
+	}
 }

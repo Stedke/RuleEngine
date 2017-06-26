@@ -15,12 +15,16 @@ import org.springframework.web.servlet.ModelAndView;
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_node_properties;
 import com.RuleEngine.model.sm_nodes;
+import com.RuleEngine.model.sm_segments;
 import com.RuleEngine.service.ValidateService;
 import com.RuleEngine.wrappers.sm_dictionaryWrapper;
 import com.RuleEngine.wrappers.sm_node_propertiesWrapper;
 import com.RuleEngine.wrappers.sm_nodesWrapper;
+import com.RuleEngine.wrappers.sm_segmentsWrapper;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 import com.RuleEngine.model.ruleData;
@@ -161,6 +165,57 @@ public class addElementController {
     	        ValidateService.missingDataInserted(ruleData);
     		}
     	}
+    	
+    	return "result3";
+    }
+    
+    @RequestMapping(value="/sm_segments", method = RequestMethod.GET)
+    public ModelAndView addSm_segments() {
+    	ModelAndView modelAndView = new ModelAndView("sm_segments","command",new sm_segmentsWrapper());
+    	modelAndView.addObject("sm_segments_id", ValidateService.getNextSm_segmentsId());
+    	
+        return modelAndView;
+    }
+    
+    @RequestMapping(value = "/addSm_segments", method = RequestMethod.POST)
+    public String addSm_segmentsForm(@ModelAttribute("sm_segmentsWrapper")sm_segmentsWrapper segmentsWrapper,
+        ModelMap model) {
+    	
+    	model.addAttribute("start_node", segmentsWrapper.getStart_node());
+    	model.addAttribute("end_node", segmentsWrapper.getEnd_node());
+    	model.addAttribute("geom", segmentsWrapper.getGeom());
+    	
+    	ArrayList<String> geom = new ArrayList<String>(Arrays.asList(segmentsWrapper.getGeom().split(";")));
+    	ArrayList<Double> geomd = new ArrayList<Double>();
+    	for(String str : geom){
+    		geomd.add(Double.parseDouble(str));
+    	}
+    	
+        CoordinateSequence cs = new GeometryFactory().getCoordinateSequenceFactory().create(geomd.size()/2, 2);
+        int j = 0;
+        for (int i = 0; i < geomd.size()/2; ++i) {
+            cs.setOrdinate(j, 0, geomd.get(i));
+            cs.setOrdinate(j, 1, geomd.get(i+1));
+            ++i;
+            ++j;
+        }
+    	LineString lineString = new GeometryFactory().createLineString(cs);
+    	
+    	sm_segments segments = new sm_segments();
+    	
+    	segments.setGeom(lineString);
+    	segments.setId(ValidateService.getNextSm_segmentsId());
+    	segments.setStart_node(ValidateService.getSm_nodes(Long.parseLong(segmentsWrapper.getStart_node())));
+    	segments.setEnd_node(ValidateService.getSm_nodes(Long.parseLong(segmentsWrapper.getEnd_node())));
+    	segments.setLink_id(ValidateService.getSm_link());
+    	
+    	
+        List<sm_segments> temp = new ArrayList<sm_segments>();
+        temp.add(segments);
+        ruleData ruleData = new ruleData();
+        ruleData.setSm_segments(temp);
+        
+        ValidateService.missingDataInserted(ruleData);
     	
     	return "result3";
     }

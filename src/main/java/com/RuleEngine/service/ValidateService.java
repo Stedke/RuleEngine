@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.RuleEngine.model.ruleData;
 import com.RuleEngine.model.sm_dictionary;
+import com.RuleEngine.model.sm_links;
 import com.RuleEngine.model.sm_nodes;
 
 public interface ValidateService {
@@ -23,4 +24,5 @@ public interface ValidateService {
 	public Long getNextSm_link_propertiesId();
 	public sm_nodes getSm_nodes(Long id);
 	public sm_dictionary getSm_dictionary(Long id);
+	public sm_links getSm_link();
 }

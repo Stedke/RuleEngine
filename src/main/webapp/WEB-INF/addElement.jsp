@@ -48,6 +48,10 @@ ${message}<br/>
 </p>
 <p>
 ${message}<br/>
+<a href="${pageContext.request.contextPath}/sm_segments.html">sm_segments</a><br/>
+</p>
+<p>
+${message}<br/>
 <a href="${pageContext.request.contextPath}/index.html">Home page</a><br/>
 </p>
 </body>
