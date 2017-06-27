@@ -6,6 +6,7 @@ import com.RuleEngine.model.ruleData;
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_links;
 import com.RuleEngine.model.sm_nodes;
+import com.RuleEngine.model.sm_segments;
 
 public interface ValidateService {
 
@@ -25,4 +26,5 @@ public interface ValidateService {
 	public sm_nodes getSm_nodes(Long id);
 	public sm_dictionary getSm_dictionary(Long id);
 	public sm_links getSm_link();
+	public sm_segments getSm_segments(Long id);
 }

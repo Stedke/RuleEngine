@@ -13,13 +13,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.RuleEngine.model.sm_dictionary;
+import com.RuleEngine.model.sm_link_properties;
+import com.RuleEngine.model.sm_links;
 import com.RuleEngine.model.sm_node_properties;
 import com.RuleEngine.model.sm_nodes;
+import com.RuleEngine.model.sm_segment_properties;
 import com.RuleEngine.model.sm_segments;
 import com.RuleEngine.service.ValidateService;
 import com.RuleEngine.wrappers.sm_dictionaryWrapper;
+import com.RuleEngine.wrappers.sm_link_propertiesWrapper;
 import com.RuleEngine.wrappers.sm_node_propertiesWrapper;
 import com.RuleEngine.wrappers.sm_nodesWrapper;
+import com.RuleEngine.wrappers.sm_segment_propertiesWrapper;
 import com.RuleEngine.wrappers.sm_segmentsWrapper;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -216,6 +221,91 @@ public class addElementController {
         ruleData.setSm_segments(temp);
         
         ValidateService.missingDataInserted(ruleData);
+    	
+    	return "result3";
+    }
+    
+    @RequestMapping(value="/sm_segment_properties", method = RequestMethod.GET)
+    public ModelAndView addSm_segment_properties() {
+    	ModelAndView modelAndView = new ModelAndView("sm_segment_properties","command",new sm_segment_propertiesWrapper());
+    	modelAndView.addObject("sm_segment_properties_id", ValidateService.getNextSm_segment_propertiesId());
+    	
+        return modelAndView;
+    }
+    
+    @RequestMapping(value = "/addSm_segment_properties", method = RequestMethod.POST)
+    public String addSm_segment_propertiesForm(@ModelAttribute("sm_segment_propertiesWrapper")sm_segment_propertiesWrapper propWrapper,
+        ModelMap model) {
+        
+    	model.addAttribute("segment_id", propWrapper.getSegment_id());
+    	model.addAttribute("tags", propWrapper.getTags());
+    	model.addAttribute("description", propWrapper.getDescription());
+    	model.addAttribute("dictionary_id", propWrapper.getDictionary_id());
+    	
+    	sm_segment_properties props = new sm_segment_properties();
+    	
+    	props.setDescription(propWrapper.getDescription());
+    	props.setId(ValidateService.getNextSm_segment_propertiesId());
+    	props.setTags(propWrapper.getTags().split(";"));
+    	
+    	sm_segments temp1 = ValidateService.getSm_segments(Long.parseLong(propWrapper.getSegment_id()));
+    	if(temp1 != null){
+    		props.setSegment_id(temp1);
+    		
+    		sm_dictionary temp2 = ValidateService.getSm_dictionary(Long.parseLong(propWrapper.getDictionary_id()));
+    		if(temp2 != null){
+    			props.setDictionary_id(temp2);
+    			
+    	        List<sm_segment_properties> temp3 = new ArrayList<sm_segment_properties>();
+    	        temp3.add(props);
+    	        ruleData ruleData = new ruleData();
+    	        ruleData.setSm_segment_properties(temp3);
+    	        
+    	        ValidateService.missingDataInserted(ruleData);
+    		}
+    	}
+    	
+    	return "result3";
+    }
+    
+    @RequestMapping(value="/sm_link_properties", method = RequestMethod.GET)
+    public ModelAndView addSm_link_properties() {
+    	ModelAndView modelAndView = new ModelAndView("sm_link_properties","command",new sm_link_propertiesWrapper());
+    	modelAndView.addObject("sm_link_properties_id", ValidateService.getNextSm_link_propertiesId());
+    	
+        return modelAndView;
+    }
+    
+    @RequestMapping(value = "/addSm_link_properties", method = RequestMethod.POST)
+    public String addSm_link_propertiesForm(@ModelAttribute("sm_link_propertiesWrapper")sm_link_propertiesWrapper propWrapper,
+        ModelMap model) {
+        
+    	model.addAttribute("tags", propWrapper.getTags());
+    	model.addAttribute("description", propWrapper.getDescription());
+    	model.addAttribute("dictionary_id", propWrapper.getDictionary_id());
+    	
+    	sm_link_properties props = new sm_link_properties();
+    	
+    	props.setDescription(propWrapper.getDescription());
+    	props.setId(ValidateService.getNextSm_link_propertiesId());
+    	props.setTags(propWrapper.getTags().split(";"));
+    	
+    	sm_links temp1 = ValidateService.getSm_link();
+    	if(temp1 != null){
+    		props.setLink_id(temp1);
+    		
+    		sm_dictionary temp2 = ValidateService.getSm_dictionary(Long.parseLong(propWrapper.getDictionary_id()));
+    		if(temp2 != null){
+    			props.setDictionary_id(temp2);
+    			
+    	        List<sm_link_properties> temp3 = new ArrayList<sm_link_properties>();
+    	        temp3.add(props);
+    	        ruleData ruleData = new ruleData();
+    	        ruleData.setSm_link_properties(temp3);
+    	        
+    	        ValidateService.missingDataInserted(ruleData);
+    		}
+    	}
     	
     	return "result3";
     }

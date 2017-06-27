@@ -226,4 +226,14 @@ public class ValidateServiceImpl implements ValidateService{
 	public sm_links getSm_link() {
 		return Sm_linksService.getChosenSm_link();
 	}
+
+	@Override
+	public sm_segments getSm_segments(Long id) {
+		for(sm_segments segment : ruleData.getSm_segments()){
+			if(segment.getId() == id){
+				return segment;
+			}
+		}
+		return null;
+	}
 }

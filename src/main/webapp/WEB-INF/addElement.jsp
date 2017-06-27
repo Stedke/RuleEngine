@@ -52,6 +52,14 @@ ${message}<br/>
 </p>
 <p>
 ${message}<br/>
+<a href="${pageContext.request.contextPath}/sm_segment_properties.html">sm_segment_properties</a><br/>
+</p>
+<p>
+${message}<br/>
+<a href="${pageContext.request.contextPath}/sm_link_properties.html">sm_link_properties</a><br/>
+</p>
+<p>
+${message}<br/>
 <a href="${pageContext.request.contextPath}/index.html">Home page</a><br/>
 </p>
 </body>
