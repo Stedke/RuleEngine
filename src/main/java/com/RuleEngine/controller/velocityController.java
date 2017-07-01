@@ -27,6 +27,7 @@ public class velocityController {
 		
 		if(isSuccessful){
 			RuleService.transferData(ValidateService.transferData());
+			RuleService.divideSm_link();
 			RuleService.fireRules();
 		}
 		

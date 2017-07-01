@@ -34,6 +34,16 @@ public class sm_links {
     private Set<sm_link_properties> link_properties;
 
     public sm_links() {}
+    
+    public sm_links(sm_links sm_link){
+    	this.id = sm_link.getId();
+    	this.way_id = sm_link.getWay_id();
+    	this.osm_start_node = sm_link.getOsm_start_node();
+    	this.osm_end_node = sm_link.getOsm_end_node();
+    	this.geom = sm_link.getGeom();
+    	this.link_id = sm_link.getLink_id();
+    	this.link_properties = sm_link.getLink_properties();
+    }
 
 	public Long getId() {
 		return id;

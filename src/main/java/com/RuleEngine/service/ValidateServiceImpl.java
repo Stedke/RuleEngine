@@ -91,7 +91,6 @@ public class ValidateServiceImpl implements ValidateService{
 		List<sm_segments> s_temp = this.ruleData.getSm_segments();
 		List<sm_segment_properties> sp_temp = this.ruleData.getSm_segment_properties();
 		List<sm_link_properties> lp_temp = this.ruleData.getSm_link_properties();
-		sm_links l_temp = this.ruleData.getSm_link();
 		
 		d_temp.addAll(ruleData.getSm_dictionary());
 		n_temp.addAll(ruleData.getSm_nodes());
@@ -100,7 +99,7 @@ public class ValidateServiceImpl implements ValidateService{
 		sp_temp.addAll(ruleData.getSm_segment_properties());
 		lp_temp.addAll(ruleData.getSm_link_properties());
 		
-		this.ruleData.setSm_link(l_temp);
+		this.ruleData.setSm_link(new sm_links(ruleData.getSm_link()));
 		this.ruleData.setSm_dictionary(d_temp);
 		this.ruleData.setSm_nodes(n_temp);
 		this.ruleData.setSm_node_properties(np_temp);
@@ -131,6 +130,8 @@ public class ValidateServiceImpl implements ValidateService{
 		this.missingRuleData.setSm_segments(s_temp);
 		this.missingRuleData.setSm_segment_properties(sp_temp);
 		this.missingRuleData.setSm_link_properties(lp_temp);
+		
+		dataInserted.setSm_link(this.ruleData.getSm_link());
 		
 		if(changed_d 
 				|| !dataInserted.getSm_link_properties().isEmpty()

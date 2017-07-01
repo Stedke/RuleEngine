@@ -51,7 +51,7 @@ public class PreloadServiceImpl implements PreloadService {
 
 	@Transactional
 	public void preloadData(sm_links sm_link){
-		this.sm_link = sm_link;
+		this.sm_link = new sm_links(sm_link);
 		
 		sm_link_properties = sm_link_propertiesDAO.getSm_link_properties(sm_link.getId());
 		

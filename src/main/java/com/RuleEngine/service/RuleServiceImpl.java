@@ -21,7 +21,6 @@ import com.RuleEngine.model.sm_segments;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.RuleEngine.model.sm_linkAreasData;
@@ -52,7 +51,6 @@ public class RuleServiceImpl implements RuleService {
 		List<sm_segments> s_temp = this.ruleData.getSm_segments();
 		List<sm_segment_properties> sp_temp = this.ruleData.getSm_segment_properties();
 		List<sm_link_properties> lp_temp = this.ruleData.getSm_link_properties();
-		sm_links l_temp = this.ruleData.getSm_link(); 
 		
 		d_temp.addAll(ruleData.getSm_dictionary());
 		n_temp.addAll(ruleData.getSm_nodes());
@@ -61,7 +59,7 @@ public class RuleServiceImpl implements RuleService {
 		sp_temp.addAll(ruleData.getSm_segment_properties());
 		lp_temp.addAll(ruleData.getSm_link_properties());
 		
-		this.ruleData.setSm_link(l_temp);
+		this.ruleData.setSm_link(new sm_links(ruleData.getSm_link()));
 		this.ruleData.setSm_dictionary(d_temp);
 		this.ruleData.setSm_nodes(n_temp);
 		this.ruleData.setSm_node_properties(np_temp);
@@ -70,7 +68,8 @@ public class RuleServiceImpl implements RuleService {
 		this.ruleData.setSm_link_properties(lp_temp);
 	}
 	
-	private void divideSm_link(){
+	@Override
+	public void divideSm_link(){
 		sm_linkAreas.clear();
 		List<Tuple<Coordinate,Long>> sm_nodesAreas = new ArrayList<Tuple<Coordinate,Long>>();
 		List<Tuple<Coordinate,Long>> sm_segmentsAreas = new ArrayList<Tuple<Coordinate,Long>>();
@@ -81,8 +80,9 @@ public class RuleServiceImpl implements RuleService {
 			sm_nodesAreas.add(new Tuple<Coordinate,Long>(closestPoints[1],node.getId()));
 		}
 		
+		
 		for(sm_segments segment : this.ruleData.getSm_segments()){
-			if(segment.getGeom().intersects(this.ruleData.getSm_link().getGeom())){//czesc dla intersects nie dziala
+			if(segment.getGeom().intersects(this.ruleData.getSm_link().getGeom())){//not working for intersect
 				Envelope envelope = segment.getGeom().intersection(this.ruleData.getSm_link().getGeom()).getEnvelopeInternal();
 				if(envelope.getHeight() > envelope.getWidth()){
 					Coordinate maxY = new Coordinate();
@@ -129,8 +129,6 @@ public class RuleServiceImpl implements RuleService {
 			
 			double minDistance_nodes = 0.0;
 			double minDistance_segments = 0.0;
-			Long minId_nodes = new Long(-1);
-			Long minId_segments = new Long(-1);
 			Tuple<Coordinate,Long> min_nodes = new Tuple<Coordinate,Long>(new Coordinate(0,0),new Long(0));
 			Tuple<Coordinate,Long> min_segments = new Tuple<Coordinate,Long>(new Coordinate(0,0),new Long(0));
 		
@@ -138,7 +136,6 @@ public class RuleServiceImpl implements RuleService {
 				Point point = new GeometryFactory().createPoint(elem.x);
 				double dist = sPoint.distance(point);
 				if(dist < minDistance_nodes){
-					minId_nodes = elem.y;
 					minDistance_nodes = dist;
 					min_nodes = elem;
 				}
@@ -147,7 +144,6 @@ public class RuleServiceImpl implements RuleService {
 				Point point = new GeometryFactory().createPoint(elem.x);
 				double dist = sPoint.distance(point);
 				if(dist < minDistance_segments){
-					minId_segments = elem.y;
 					minDistance_segments = dist;
 					min_segments = elem;
 				}
@@ -202,6 +198,8 @@ public class RuleServiceImpl implements RuleService {
 			
 				sPoint = point;
 				sm_nodesAreas.remove(min_nodes);
+				
+				sm_linkAreas.add(data);
 
 			}else{
 			
@@ -246,7 +244,31 @@ public class RuleServiceImpl implements RuleService {
 			
 				sPoint = point;
 				sm_segmentsAreas.remove(min_segments);
+				
+				sm_linkAreas.add(data);
 			}		
+		}
+		
+		for(sm_linkAreasData data : sm_linkAreas){
+			for(sm_node_properties prop : ruleData.getSm_node_properties()){
+				for(sm_nodes node : data.getSm_nodes()){
+					if(prop.getNode_id().getId().intValue() == node.getId().intValue()){
+						List<sm_node_properties> np_temp = data.getSm_node_properties();
+						np_temp.add(prop);
+						data.setSm_node_properties(np_temp);
+					}
+				}
+			}
+			for(sm_segment_properties prop : ruleData.getSm_segment_properties()){
+				for(sm_segments segment : data.getSm_segments()){
+					if(prop.getSegment_id().getId().intValue() == segment.getId().intValue()){
+						List<sm_segment_properties> sp_temp = data.getSm_segment_properties();
+						sp_temp.add(prop);
+						data.setSm_segment_properties(sp_temp);
+					}
+				}
+			}
+			data.setSm_link_properties(ruleData.getSm_link_properties());	
 		}
 	}
 }
