@@ -5,6 +5,7 @@ import java.util.List;
 import com.RuleEngine.model.ruleData;
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_link_properties;
+import com.RuleEngine.model.sm_links;
 import com.RuleEngine.model.sm_node_properties;
 import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.model.sm_segment_properties;
@@ -12,7 +13,7 @@ import com.RuleEngine.model.sm_segments;
 
 public interface PreloadService {
 
-	public void preloadData(Long linkId);
+	public void preloadData(sm_links sm_link);
 	public List<sm_link_properties> getSm_link_properties();
 	public void setSm_link_properties(List<sm_link_properties> sm_link_properties);
 	public List<sm_dictionary> getSm_dictionary();

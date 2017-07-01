@@ -9,6 +9,5 @@ public interface Sm_linksService {
 	public void getSm_links(ArrayList<String> linksArea);
 	public List<sm_links> getChosenSm_Links();
 	public boolean setChosenSm_linkId(Integer chosenSm_linkId);
-	public Integer getChosenSm_linkId();
 	public sm_links getChosenSm_link();
 }

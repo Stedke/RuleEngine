@@ -15,6 +15,7 @@ import com.RuleEngine.dao.sm_segment_propertiesDAO;
 import com.RuleEngine.dao.sm_node_propertiesDAO;
 import com.RuleEngine.dao.sm_dictionaryDAO;
 import com.RuleEngine.model.sm_link_properties;
+import com.RuleEngine.model.sm_links;
 import com.RuleEngine.model.sm_segment_properties;
 import com.RuleEngine.model.sm_node_properties;
 import com.RuleEngine.model.ruleData;
@@ -46,18 +47,18 @@ public class PreloadServiceImpl implements PreloadService {
 	private List<sm_segment_properties> sm_segment_properties = new ArrayList<sm_segment_properties>();
 	private List<sm_node_properties> sm_node_properties = new ArrayList<sm_node_properties>();
 	private List<sm_dictionary> sm_dictionary = new ArrayList<sm_dictionary>();
-	private Long linkId;
+	private sm_links sm_link;
 
 	@Transactional
-	public void preloadData(Long linkId){
-		this.linkId = linkId;
+	public void preloadData(sm_links sm_link){
+		this.sm_link = sm_link;
 		
-		sm_link_properties = sm_link_propertiesDAO.getSm_link_properties(linkId);
+		sm_link_properties = sm_link_propertiesDAO.getSm_link_properties(sm_link.getId());
 		
-		sm_segments = sm_segmentsDAO.getSm_segments(linkId);
+		sm_segments = sm_segmentsDAO.getSm_segments(sm_link.getId());
 		
-		sm_nodes = sm_nodesDAO.getSm_nodesFromLink(linkId);
-		sm_nodes.addAll(sm_nodesDAO.getSm_nodesFromLinkProximity(linkId, new Integer(5)));
+		sm_nodes = sm_nodesDAO.getSm_nodesFromLink(sm_link.getId());
+		sm_nodes.addAll(sm_nodesDAO.getSm_nodesFromLinkProximity(sm_link.getId(), new Integer(5)));
 		
 		for(sm_segments segments : sm_segments){
 			sm_segment_properties.addAll(sm_segment_propertiesDAO.getSm_segment_properties(segments.getId()));
@@ -99,7 +100,7 @@ public class PreloadServiceImpl implements PreloadService {
 		temp.setSm_nodes(sm_nodes);
 		temp.setSm_segment_properties(sm_segment_properties);
 		temp.setSm_segments(sm_segments);
-		temp.setLinkId(linkId);
+		temp.setSm_link(sm_link);
 		return temp;
 	}
 

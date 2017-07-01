@@ -11,7 +11,7 @@ public class ruleData {
 	private List<sm_node_properties> sm_node_properties = new ArrayList<sm_node_properties>();
 	private List<sm_segment_properties> sm_segment_properties = new ArrayList<sm_segment_properties>();
 	private List<sm_link_properties> sm_link_properties = new ArrayList<sm_link_properties>();
-	private Long linkId;
+	private sm_links sm_link;
 	
 	public List<sm_nodes> getSm_nodes() {
 		return sm_nodes;
@@ -49,10 +49,10 @@ public class ruleData {
 	public void setSm_link_properties(List<sm_link_properties> sm_link_properties) {
 		this.sm_link_properties = sm_link_properties;
 	}
-	public Long getLinkId() {
-		return linkId;
+	public sm_links getSm_link() {
+		return sm_link;
 	}
-	public void setLinkId(Long linkId) {
-		this.linkId = linkId;
+	public void setSm_link(sm_links sm_link) {
+		this.sm_link = sm_link;
 	}
 }

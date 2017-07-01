@@ -30,7 +30,7 @@ public class preloadController {
 	public ModelAndView Validate() {
 		ModelAndView modelAndView = new ModelAndView("Preload");
 		
-		preloadService.preloadData(sm_linksService.getChosenSm_linkId().longValue());
+		preloadService.preloadData(sm_linksService.getChosenSm_link());
 		List<sm_link_properties> sm_link_properties = preloadService.getSm_link_properties();
 		List<sm_segment_properties> sm_segment_properties = preloadService.getSm_segment_properties();
 		List<sm_node_properties> sm_node_properties = preloadService.getSm_node_properties();
