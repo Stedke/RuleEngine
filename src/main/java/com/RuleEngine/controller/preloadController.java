@@ -2,6 +2,7 @@ package com.RuleEngine.controller;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,12 +15,13 @@ import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.model.sm_segment_properties;
 import com.RuleEngine.model.sm_segments;
 import com.RuleEngine.service.PreloadService;
+import com.RuleEngine.service.RuleServiceImpl;
 import com.RuleEngine.service.Sm_linksService;
 
 @Controller
 @RequestMapping(value="/preload")
 public class preloadController {
-
+	
 	@Autowired
 	private PreloadService preloadService;
 	

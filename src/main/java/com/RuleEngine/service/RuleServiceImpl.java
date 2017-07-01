@@ -27,9 +27,13 @@ import com.RuleEngine.model.sm_linkAreasData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.apache.log4j.Logger;
+
 @Service
 public class RuleServiceImpl implements RuleService {
 
+	private static final Logger logger = Logger.getLogger(RuleServiceImpl.class);
+	
 	public ruleData ruleData = new ruleData();
 	private List<sm_linkAreasData> sm_linkAreas= new ArrayList<sm_linkAreasData>();
 	
@@ -132,8 +136,14 @@ public class RuleServiceImpl implements RuleService {
 			Tuple<Coordinate,Long> min_nodes = new Tuple<Coordinate,Long>(new Coordinate(0,0),new Long(0));
 			Tuple<Coordinate,Long> min_segments = new Tuple<Coordinate,Long>(new Coordinate(0,0),new Long(0));
 		
+			logger.debug("AAAAAAAAAAAAAAAAAAAAAAAA");
+			
 			for(Tuple<Coordinate,Long> elem : sm_nodesAreas){
 				Point point = new GeometryFactory().createPoint(elem.x);
+				
+				logger.debug(point.toString());
+				logger.debug(sPoint.toString());
+				
 				double dist = sPoint.distance(point);
 				if(dist < minDistance_nodes){
 					minDistance_nodes = dist;
