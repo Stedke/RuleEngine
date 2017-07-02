@@ -17,6 +17,6 @@ public class Tuple<X, Y> {
 	    if (getClass() != obj.getClass())
 	        return false;
 	    Tuple<X,Y> tuple = (Tuple<X,Y>)obj;
-	    return y.equals(tuple.y);
+	    return y.equals(tuple.y) && x.equals(tuple.x);
 	}
 } 
