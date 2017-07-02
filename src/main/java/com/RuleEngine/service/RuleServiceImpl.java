@@ -5,22 +5,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieScanner;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.stereotype.Service;
 
 import com.RuleEngine.model.Tuple;
+import com.RuleEngine.model.missingItemsList;
 import com.RuleEngine.model.ruleData;
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_link_properties;
 import com.RuleEngine.model.sm_links;
+import com.RuleEngine.model.sm_nodeImpactArea;
 import com.RuleEngine.model.sm_node_properties;
 import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.model.sm_segment_properties;
 import com.RuleEngine.model.sm_segments;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.RuleEngine.model.sm_linkAreasData;
@@ -36,6 +42,9 @@ public class RuleServiceImpl implements RuleService {
 	
 	public ruleData ruleData = new ruleData();
 	private List<sm_linkAreasData> sm_linkAreas= new ArrayList<sm_linkAreasData>();
+	
+	private KieContainer kieContainerImpact;
+	private KieScanner kieScannerImpact;
 	
 	@Autowired
 	private KieContainer kieContainer;
@@ -70,6 +79,27 @@ public class RuleServiceImpl implements RuleService {
 		this.ruleData.setSm_segments(s_temp);
 		this.ruleData.setSm_segment_properties(sp_temp);
 		this.ruleData.setSm_link_properties(lp_temp);
+	}
+	
+	@Override
+	public void updateAllNodesImpacts(){
+		KieServices ks = KieServices.Factory.get();
+		kieContainerImpact = ks.newKieContainer(ks.newReleaseId("com.RuleEngine", "ImpactRuleEngine", "1.0.0"));
+    	kieScannerImpact = ks.newKieScanner(kieContainerImpact);
+    	kieScannerImpact.start(150000);
+    	
+    	sm_nodeImpactArea impact = new sm_nodeImpactArea();
+    	
+		KieSession kieSession = kieContainerImpact.newKieSession();
+		kieSession.setGlobal("sm_nodeImpactAreaList", impact);
+		
+		for(sm_dictionary dictionary : ruleData.getSm_dictionary() ){
+			kieSession.insert(dictionary);
+		}
+		
+		kieSession.fireAllRules();
+		kieSession.dispose();
+		
 	}
 	
 	@Override
