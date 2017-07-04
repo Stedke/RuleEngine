@@ -1,6 +1,7 @@
 package com.RuleEngine.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +18,15 @@ import com.RuleEngine.model.ruleData;
 import com.RuleEngine.model.sm_dictionary;
 import com.RuleEngine.model.sm_link_properties;
 import com.RuleEngine.model.sm_links;
+import com.RuleEngine.model.sm_nodeImpact;
 import com.RuleEngine.model.sm_nodeImpactArea;
+import com.RuleEngine.model.sm_nodeImpactEnum;
 import com.RuleEngine.model.sm_node_properties;
 import com.RuleEngine.model.sm_nodes;
 import com.RuleEngine.model.sm_segment_properties;
 import com.RuleEngine.model.sm_segments;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -100,6 +104,118 @@ public class RuleServiceImpl implements RuleService {
 		kieSession.fireAllRules();
 		kieSession.dispose();
 		
+		logger.debug("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
+		
+		List<sm_nodes> nodesToRemove = new ArrayList<sm_nodes>();
+		List<sm_segments> segmentsToAdd = new ArrayList<sm_segments>();
+		List<sm_segment_properties> segmentPropertiesToAdd = new ArrayList<sm_segment_properties>();
+		
+		for(Tuple<String, sm_nodeImpact> elem : impact.getListOfNodes()){
+			logger.debug("For Tuple with dictionary: "+elem.x);
+			sm_dictionary dictionary = new sm_dictionary();
+			List<sm_node_properties> props = new ArrayList<sm_node_properties>();
+			
+			for(sm_dictionary dic : ruleData.getSm_dictionary()){
+				if(dic.getName().equals(elem.x)){
+					dictionary = dic;
+				}
+			}
+			logger.debug("Dictionary name: "+dictionary.getName());
+			for(sm_node_properties prop : ruleData.getSm_node_properties()){
+				if(prop.getDictionary_id().getName().equals(dictionary.getName())){
+					props.add(prop);
+					logger.debug("props added with: "+prop.getId().toString());
+				}
+			}			
+			for(sm_node_properties prop : props){
+				for(sm_nodes node : ruleData.getSm_nodes()){
+					if(prop.getNode_id().getId().equals(node.getId())){
+						if(elem.y.getImpact().compareTo(sm_nodeImpactEnum.TO) == 0){
+							Geometry geom = node.getGeom().buffer(elem.y.getValue().doubleValue());
+							logger.debug("geom buffer: "+geom.toString());
+							
+							if(geom.getBoundary().intersects(ruleData.getSm_link().getGeom())){
+								DistanceOp distanceOp = new DistanceOp(geom.getBoundary().intersection(ruleData.getSm_link().getGeom()),
+																		ruleData.getSm_link().getGeom().getStartPoint());
+								Coordinate[] closestPoint = distanceOp.closestPoints();
+								
+								DistanceOp distanceOp1 = new DistanceOp(node.getGeom(),
+																		ruleData.getSm_link().getGeom());
+								Coordinate[] closestPoint1 = distanceOp1.closestPoints();
+								
+								logger.debug("closest start point: "+closestPoint[0].toString());
+								logger.debug("closest to node: "+closestPoint1[1].toString());
+								
+								sm_segments sm = new sm_segments();
+								sm_segment_properties sm_props = new sm_segment_properties();
+								
+						        CoordinateSequence cs = new GeometryFactory().getCoordinateSequenceFactory().create(2, 2);
+						        cs.setOrdinate(0, 0, closestPoint[0].x);
+						        cs.setOrdinate(0, 1, closestPoint[0].y);
+						        cs.setOrdinate(1, 0, closestPoint1[1].x);
+						        cs.setOrdinate(1, 1, closestPoint1[1].y);						    	 
+								LineString line = new GeometryFactory().createLineString(cs);
+								
+								logger.debug("lineString: "+line.toString());
+								
+								sm_props.setId(getNextSm_segment_propertiesId());
+								sm_props.setTags(prop.getTags());
+								sm_props.setDictionary_id(prop.getDictionary_id());
+								sm_props.setDescription(prop.getDescription());
+								
+								sm.setId(getNextSm_segmentsId());
+								sm.setLink_id(ruleData.getSm_link());
+								sm.setGeom(line);
+								
+								sm_props.setSegment_id(sm);
+								
+								segmentsToAdd.add(sm);
+								segmentPropertiesToAdd.add(sm_props);
+								nodesToRemove.add(node);
+								
+								List<sm_segments> s_temp = ruleData.getSm_segments();
+								List<sm_segment_properties> sp_temp = ruleData.getSm_segment_properties();
+								
+								s_temp.add(sm);
+								sp_temp.add(sm_props);
+								
+								ruleData.setSm_segments(s_temp);
+								ruleData.setSm_segment_properties(sp_temp);
+							}
+							
+						} else if(elem.y.getImpact().compareTo(sm_nodeImpactEnum.FROM) == 0){
+							
+						}else if(elem.y.getImpact().compareTo(sm_nodeImpactEnum.UNTIL) == 0){
+							
+						}else if(elem.y.getImpact().compareTo(sm_nodeImpactEnum.AREA) == 0){
+							
+						}
+					}
+				}
+			}	
+		}
+		
+		logger.debug("Print all elems:");
+		for(sm_segments seg : segmentsToAdd){
+			logger.debug("Seg id: "+ seg.getId().toString());
+			logger.debug("Seg geom: "+seg.getGeom().toString());
+		}
+		for(sm_segment_properties seg : segmentPropertiesToAdd){
+			logger.debug("SegProp id: "+ seg.getId().toString());
+			logger.debug("SegProp dict name: "+seg.getDictionary_id().getName());
+			logger.debug("SegProp description: "+seg.getDescription());
+			logger.debug("SegProp tags: "+seg.getTags().toString());
+			logger.debug("SegProp seg id: "+seg.getSegment_id().getId().toString());
+		}
+		for(sm_nodes node : nodesToRemove){
+			logger.debug("Node id: "+node.getId().toString());
+		}
+
+		List<sm_nodes> n_temp = ruleData.getSm_nodes();
+		
+		n_temp.removeAll(nodesToRemove);
+
+		ruleData.setSm_nodes(n_temp);
 	}
 	
 	@Override
@@ -119,13 +235,16 @@ public class RuleServiceImpl implements RuleService {
 		
 		for(sm_segments segment : this.ruleData.getSm_segments()){
 			logger.debug("check sm_segment: "+segment.getGeom().toString());
-			if(segment.getGeom().intersects(this.ruleData.getSm_link().getGeom())){//not working for intersect
+			if(segment.getGeom().intersects(this.ruleData.getSm_link().getGeom())){
 				logger.debug("Intersects!");
 				Envelope envelope = segment.getGeom().intersection(this.ruleData.getSm_link().getGeom()).getEnvelopeInternal();
 				logger.debug("Envelope: "+ envelope.toString());
+				boolean heightValid = false;
+				Coordinate maxY = new Coordinate();
+				Coordinate minY = new Coordinate();
+				Coordinate maxX = new Coordinate();
+				Coordinate minX = new Coordinate();
 				if(envelope.getHeight() > envelope.getWidth()){
-					Coordinate maxY = new Coordinate();
-					Coordinate minY = new Coordinate();
 					for(Coordinate coord : segment.getGeom().intersection(this.ruleData.getSm_link().getGeom()).getCoordinates()){
 						if(coord.y == envelope.getMaxY()){
 							maxY.setCoordinate(coord);
@@ -134,13 +253,11 @@ public class RuleServiceImpl implements RuleService {
 							minY.setCoordinate(coord);
 						}
 					}
-					sm_segmentsAreas.add(new Tuple<Coordinate,Long>(new Coordinate(maxY),segment.getId()));
-					sm_segmentsAreas.add(new Tuple<Coordinate,Long>(new Coordinate(minY),segment.getId()));
-					logger.debug("sm_segmentsAreas maxY: "+ maxY.toString());
-					logger.debug("sm_segmentsAreas minY: "+ minY.toString());
+					heightValid = true;
+					logger.debug("maxY: "+ maxY.toString());
+					logger.debug("minY: "+ minY.toString());
 				}else{
-					Coordinate maxX = new Coordinate();
-					Coordinate minX = new Coordinate();
+
 					for(Coordinate coord : segment.getGeom().intersection(this.ruleData.getSm_link().getGeom()).getCoordinates()){
 						if(coord.x == envelope.getMaxX()){
 							maxX.setCoordinate(coord);
@@ -149,10 +266,45 @@ public class RuleServiceImpl implements RuleService {
 							minX.setCoordinate(coord);
 						}
 					}
-					sm_segmentsAreas.add(new Tuple<Coordinate,Long>(new Coordinate(maxX),segment.getId()));
-					sm_segmentsAreas.add(new Tuple<Coordinate,Long>(new Coordinate(minX),segment.getId()));
-					logger.debug("sm_segmentsAreas maxX: "+ maxX.toString());
-					logger.debug("sm_segmentsAreas minX: "+ minX.toString());
+					logger.debug("maxX: "+ maxX.toString());
+					logger.debug("minX: "+ minX.toString());
+				}
+				
+				logger.debug("Check start and end point");
+				DistanceOp distanceOp = new DistanceOp(segment.getGeom().getStartPoint(),this.ruleData.getSm_link().getGeom());
+				Coordinate[] distance = distanceOp.closestPoints();			
+				logger.debug("first: "+distance[1].toString());
+				
+				DistanceOp distanceOp1 = new DistanceOp(segment.getGeom().getEndPoint(),this.ruleData.getSm_link().getGeom());
+				Coordinate[] distance1 = distanceOp1.closestPoints();			
+				logger.debug("second: "+distance1[1].toString());
+				
+				double dstH = 0;
+				double dst = distance[1].distance(distance1[1]);
+				logger.debug("dst: "+Double.toString(dst));
+				
+				if(heightValid){
+					dstH = maxY.distance(minY);
+					logger.debug("dstH: "+Double.toString(dstH));		
+					
+					if(dstH < dst){
+						sm_segmentsAreas.add(new Tuple<Coordinate,Long>(distance[1],segment.getId()));
+						sm_segmentsAreas.add(new Tuple<Coordinate,Long>(distance1[1],segment.getId()));
+					}else{
+						sm_segmentsAreas.add(new Tuple<Coordinate,Long>(new Coordinate(maxY),segment.getId()));
+						sm_segmentsAreas.add(new Tuple<Coordinate,Long>(new Coordinate(minY),segment.getId()));
+					}
+				}else{
+					dstH = maxX.distance(minX);
+					logger.debug("dstH: "+Double.toString(dstH));
+					
+					if(dstH < dst){
+						sm_segmentsAreas.add(new Tuple<Coordinate,Long>(distance[1],segment.getId()));
+						sm_segmentsAreas.add(new Tuple<Coordinate,Long>(distance1[1],segment.getId()));
+					}else{
+						sm_segmentsAreas.add(new Tuple<Coordinate,Long>(new Coordinate(maxX),segment.getId()));
+						sm_segmentsAreas.add(new Tuple<Coordinate,Long>(new Coordinate(minX),segment.getId()));
+					}
 				}
 			}else{
 				logger.debug("Does not Intersect");
@@ -462,5 +614,45 @@ public class RuleServiceImpl implements RuleService {
 			}
 		}
 		
+	}
+	
+	private Long getNextSm_nodesId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_nodes node : ruleData.getSm_nodes()){
+			temp.add(node.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+
+	private Long getNextSm_segmentsId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_segments segment : ruleData.getSm_segments()){
+			temp.add(segment.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+
+	private Long getNextSm_node_propertiesId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_node_properties prop : ruleData.getSm_node_properties()){
+			temp.add(prop.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+
+	private Long getNextSm_segment_propertiesId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_segment_properties prop : ruleData.getSm_segment_properties()){
+			temp.add(prop.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+
+	private Long getNextSm_link_propertiesId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_link_properties prop : ruleData.getSm_link_properties()){
+			temp.add(prop.getId());
+		}
+		return (Collections.max(temp)+1);
 	}
 }
