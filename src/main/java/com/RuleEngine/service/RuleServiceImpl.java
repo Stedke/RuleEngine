@@ -500,8 +500,7 @@ public class RuleServiceImpl implements RuleService {
 				for(Tuple<Long,Long> elem : idCount){
 					logger.debug("For id: "+elem.x.toString());
 					logger.debug("For Count: "+elem.y.toString());
-					if((elem.y.intValue() == 1)
-							|| (elem.y.intValue() == 2 && elem.x.intValue() == min_segments.y.intValue())){
+					if(elem.y.intValue() == 1){
 						sm_segments segment = new sm_segments();
 						for(sm_segments segments : ruleData.getSm_segments()){
 							logger.debug("For: "+segments.getGeom().toString());
