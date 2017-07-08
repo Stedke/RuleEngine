@@ -107,8 +107,14 @@ public class RuleServiceImpl implements RuleService {
 		logger.debug("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
 		
 		List<sm_nodes> nodesToRemove = new ArrayList<sm_nodes>();
+		List<sm_dictionary> dictionariesToAdd = new ArrayList<sm_dictionary>();
 		List<sm_segments> segmentsToAdd = new ArrayList<sm_segments>();
 		List<sm_segment_properties> segmentPropertiesToAdd = new ArrayList<sm_segment_properties>();
+		
+		Long sm_nodesId = getNextSm_nodesId();
+		Long sm_segmentsId = getNextSm_segmentsId();
+		Long sm_segment_propertiesId = getNextSm_segment_propertiesId();
+		Long sm_dictionaryId = getNextSm_dictionaryId();
 		
 		for(Tuple<String, sm_nodeImpact> elem : impact.getListOfNodes()){
 			logger.debug("For Tuple with dictionary: "+elem.x);
@@ -135,6 +141,8 @@ public class RuleServiceImpl implements RuleService {
 							logger.debug("geom buffer: "+geom.toString());
 							
 							if(geom.getBoundary().intersects(ruleData.getSm_link().getGeom())){
+
+								//TO part of the node 		
 								DistanceOp distanceOp = new DistanceOp(geom.getBoundary().intersection(ruleData.getSm_link().getGeom()),
 																		ruleData.getSm_link().getGeom().getStartPoint());
 								Coordinate[] closestPoint = distanceOp.closestPoints();
@@ -142,6 +150,11 @@ public class RuleServiceImpl implements RuleService {
 								DistanceOp distanceOp1 = new DistanceOp(node.getGeom(),
 																		ruleData.getSm_link().getGeom());
 								Coordinate[] closestPoint1 = distanceOp1.closestPoints();
+								
+								if((geom.getBoundary().intersection(ruleData.getSm_link().getGeom()).getNumPoints() == 1 && 
+										(closestPoint[0].distance(closestPoint[1]) > closestPoint1[1].distance(closestPoint[1])))){
+									closestPoint[0] = closestPoint1[1];  
+								}
 								
 								logger.debug("closest start point: "+closestPoint[0].toString());
 								logger.debug("closest to node: "+closestPoint1[1].toString());
@@ -158,12 +171,14 @@ public class RuleServiceImpl implements RuleService {
 								
 								logger.debug("lineString: "+line.toString());
 								
-								sm_props.setId(getNextSm_segment_propertiesId());
+								sm_props.setId(new Long(sm_segment_propertiesId));
+								sm_segment_propertiesId++;
 								sm_props.setTags(prop.getTags());
 								sm_props.setDictionary_id(prop.getDictionary_id());
 								sm_props.setDescription(prop.getDescription());
 								
-								sm.setId(getNextSm_segmentsId());
+								sm.setId(new Long(sm_segmentsId));
+								sm_segmentsId++;
 								sm.setLink_id(ruleData.getSm_link());
 								sm.setGeom(line);
 								
@@ -173,14 +188,242 @@ public class RuleServiceImpl implements RuleService {
 								segmentPropertiesToAdd.add(sm_props);
 								nodesToRemove.add(node);
 								
-								List<sm_segments> s_temp = ruleData.getSm_segments();
-								List<sm_segment_properties> sp_temp = ruleData.getSm_segment_properties();
+								//Set sm_segment property to TO
+								sm_segment_properties sm_props1 = new sm_segment_properties();
+								sm_props1.setId(new Long(sm_segment_propertiesId));
+								sm_segment_propertiesId++;
+								String[] newTags = {"TO"}; 
+								sm_props1.setTags(newTags);
+								sm_props1.setDescription(new String("Node impact TO"));
+								sm_props1.setSegment_id(sm);
 								
-								s_temp.add(sm);
-								sp_temp.add(sm_props);
+								//Add new dictionary if needed or set dictionary
+								boolean found = false;
+								for(sm_dictionary dt : dictionariesToAdd){
+									if(dt.getName().equals("TO_FROM_UNTIL")){
+										sm_props1.setDictionary_id(dt);
+										found = true;
+										logger.debug("Dictionary found");
+										break;
+									}
+								}
+								if(!found){
+									sm_dictionary d = new sm_dictionary();
+									d.setDatatypes(new String[]{"String","String","String"});
+									d.setDescription("Node impact");
+									d.setId(new Long(sm_dictionaryId));
+									sm_dictionaryId++;
+									d.setKey(new String[]{"TO","FROM","UNTIL"});
+									d.setName("TO_FROM_UNTIL");
+									d.setRequired(new Boolean[]{false,false,false});
+									dictionariesToAdd.add(d);
+									
+									for(sm_dictionary dt : dictionariesToAdd){
+										if(dt.getName().equals("TO_FROM_UNTIL")){
+											sm_props1.setDictionary_id(dt);
+											logger.debug("Setting dictionary: "+dt.getName());
+											break;
+										}
+									}
+								}
 								
-								ruleData.setSm_segments(s_temp);
-								ruleData.setSm_segment_properties(sp_temp);
+								//set sm_segment_property affects segment
+								for(sm_segments s : ruleData.getSm_segments()){
+									if(s.getStart_node().getGeom().equals(node.getGeom()) || s.getStart_node().getGeom().equals(node.getGeom())){
+										sm_segment_properties sm_props4 = new sm_segment_properties();
+										sm_props4.setId(new Long(sm_segment_propertiesId));
+										sm_segment_propertiesId++;
+										
+										sm_props4.setTags(new String[]{s.getId().toString()});
+										sm_props4.setDescription(new String("Impacts segment"));
+										sm_props4.setSegment_id(sm);
+										//Add new dictionary if needed or set dictionary
+										boolean found3 = false;
+										for(sm_dictionary dt : dictionariesToAdd){
+											if(dt.getName().equals("Impacts segment")){
+												sm_props4.setDictionary_id(dt);
+												found3 = true;
+												logger.debug("Dictionary found");
+												break;
+											}
+										}
+										if(!found3){
+											sm_dictionary d = new sm_dictionary();
+											d.setDatatypes(new String[]{"String"});
+											d.setDescription("Impacts segment");
+											d.setId(new Long(sm_dictionaryId));
+											sm_dictionaryId++;
+											d.setKey(new String[]{"ID"});
+											d.setName("Impacts segment");
+											d.setRequired(new Boolean[]{false});
+											dictionariesToAdd.add(d);
+											
+											for(sm_dictionary dt : dictionariesToAdd){
+												if(dt.getName().equals("Impacts segment")){
+													sm_props4.setDictionary_id(dt);
+													logger.debug("Setting dictionary: "+dt.getName());
+													break;
+												}
+											}
+										}
+										segmentPropertiesToAdd.add(sm_props4);
+									}
+								}
+
+								segmentPropertiesToAdd.add(sm_props1);
+								
+								//FROM part of the node
+								
+								DistanceOp distanceOp2 = new DistanceOp(geom.getBoundary().intersection(ruleData.getSm_link().getGeom()),
+										ruleData.getSm_link().getGeom().getEndPoint());
+								Coordinate[] closestPoint2 = distanceOp2.closestPoints();
+
+								DistanceOp distanceOp3 = new DistanceOp(node.getGeom(),
+										ruleData.getSm_link().getGeom());
+								Coordinate[] closestPoint3 = distanceOp3.closestPoints();
+								
+								if((geom.getBoundary().intersection(ruleData.getSm_link().getGeom()).getNumPoints() == 1) && 
+										(closestPoint2[0].distance(closestPoint2[1]) > closestPoint3[1].distance(closestPoint2[1]))){
+									closestPoint2[0] = closestPoint3[1];  
+								}
+
+								logger.debug("closest end point: "+closestPoint2[0].toString());
+								logger.debug("closest to node: "+closestPoint3[1].toString());
+
+								sm_segments sm1 = new sm_segments();
+								sm_segment_properties sm_props2 = new sm_segment_properties();
+
+								CoordinateSequence cs1 = new GeometryFactory().getCoordinateSequenceFactory().create(2, 2);
+								cs1.setOrdinate(0, 0, closestPoint2[0].x);
+								cs1.setOrdinate(0, 1, closestPoint2[0].y);
+								cs1.setOrdinate(1, 0, closestPoint3[1].x);
+								cs1.setOrdinate(1, 1, closestPoint3[1].y);						    	 
+								LineString line1 = new GeometryFactory().createLineString(cs1);
+
+								logger.debug("lineString: "+line1.toString());
+
+								sm_props2.setId(new Long(sm_segment_propertiesId));
+								sm_segment_propertiesId++;
+								sm_props2.setTags(prop.getTags());
+								sm_props2.setDictionary_id(prop.getDictionary_id());
+								sm_props2.setDescription(prop.getDescription());
+								
+
+								sm1.setId(new Long(sm_segmentsId));
+								sm_segmentsId++;
+								sm1.setLink_id(ruleData.getSm_link());
+								sm1.setGeom(line1);
+
+								sm_props2.setSegment_id(sm1);
+
+								segmentsToAdd.add(sm1);
+								segmentPropertiesToAdd.add(sm_props2);
+
+								//Set sm_segment property to FROM
+								sm_segment_properties sm_props3 = new sm_segment_properties();
+								sm_props3.setId(new Long(sm_segment_propertiesId));
+								sm_segment_propertiesId++;
+								String[] newTags1 = {"TO1"}; 
+								sm_props3.setTags(newTags1);
+								sm_props3.setDescription(new String("Node impact TO1"));
+								sm_props3.setSegment_id(sm1);
+
+								//Add new dictionary if needed or set dictionary
+								boolean found1 = false;
+								for(sm_dictionary dt : dictionariesToAdd){
+									if(dt.getName().equals("TO_FROM_UNTIL")){
+										sm_props3.setDictionary_id(dt);
+										found1 = true;
+										logger.debug("Dictionary found");
+										break;
+									}
+								}
+								if(!found1){
+									sm_dictionary d = new sm_dictionary();
+									d.setDatatypes(new String[]{"String","String","String"});
+									d.setDescription("Node impact");
+									d.setId(getNextSm_dictionaryId());
+									d.setKey(new String[]{"TO","FROM","UNTIL"});
+									d.setName("TO_FROM_UNTIL");
+									d.setRequired(new Boolean[]{false,false,false});
+									dictionariesToAdd.add(d);
+	
+									for(sm_dictionary dt : dictionariesToAdd){
+										if(dt.getName().equals("TO_FROM_UNTIL")){
+											sm_props3.setDictionary_id(dt);
+											logger.debug("Setting dictionary: "+dt.getName());
+											break;
+										}
+									}
+								}
+								
+								//set sm_segment_property affects segment
+								for(sm_segments s : ruleData.getSm_segments()){
+									if(s.getStart_node().getGeom().equals(node.getGeom()) || s.getStart_node().getGeom().equals(node.getGeom())){
+										sm_segment_properties sm_props5 = new sm_segment_properties();
+										sm_props5.setId(new Long(sm_segment_propertiesId));
+										sm_segment_propertiesId++;
+										sm_props5.setTags(new String[]{s.getId().toString()});
+										sm_props5.setDescription(new String("Impacts segment"));
+										sm_props5.setSegment_id(sm1);
+										//Add new dictionary if needed or set dictionary
+										boolean found4 = false;
+										for(sm_dictionary dt : dictionariesToAdd){
+											if(dt.getName().equals("Impacts segment")){
+												sm_props5.setDictionary_id(dt);
+												found4 = true;
+												logger.debug("Dictionary found");
+												break;
+											}
+										}
+										if(!found4){
+											sm_dictionary d = new sm_dictionary();
+											d.setDatatypes(new String[]{"String"});
+											d.setDescription("Impacts segment");
+											d.setId(new Long(sm_dictionaryId));
+											sm_dictionaryId++;
+											d.setKey(new String[]{"ID"});
+											d.setName("Impacts segment");
+											d.setRequired(new Boolean[]{false});
+											dictionariesToAdd.add(d);
+											
+											for(sm_dictionary dt : dictionariesToAdd){
+												if(dt.getName().equals("Impacts segment")){
+													sm_props5.setDictionary_id(dt);
+													logger.debug("Setting dictionary: "+dt.getName());
+													break;
+												}
+											}
+										}
+										segmentPropertiesToAdd.add(sm_props5);
+									}
+								}
+	
+								segmentPropertiesToAdd.add(sm_props3);
+								
+								//Copy all other nodes properties
+								for(sm_node_properties it : ruleData.getSm_node_properties()){							
+								if(it.getNode_id().getId().equals(node.getId()) && (!it.getId().equals(prop.getId()))){
+										sm_segment_properties gg = new sm_segment_properties();
+										gg.setDescription(it.getDescription());
+										gg.setDictionary_id(it.getDictionary_id());
+										gg.setId(new Long(sm_segment_propertiesId));
+										sm_segment_propertiesId++;
+										gg.setSegment_id(sm);
+										gg.setTags(it.getTags());
+										
+										sm_segment_properties gg1 = new sm_segment_properties();
+										gg1.setDescription(it.getDescription());
+										gg1.setDictionary_id(it.getDictionary_id());
+										gg1.setId(new Long(sm_segment_propertiesId));
+										sm_segment_propertiesId++;
+										gg1.setSegment_id(sm1);
+										gg1.setTags(it.getTags());
+
+										segmentPropertiesToAdd.add(gg);
+										segmentPropertiesToAdd.add(gg1);
+									}
+								}
 							}
 							
 						} else if(elem.y.getImpact().compareTo(sm_nodeImpactEnum.FROM) == 0){
@@ -192,7 +435,7 @@ public class RuleServiceImpl implements RuleService {
 						}
 					}
 				}
-			}	
+			}
 		}
 		
 		logger.debug("Print all elems:");
@@ -210,12 +453,25 @@ public class RuleServiceImpl implements RuleService {
 		for(sm_nodes node : nodesToRemove){
 			logger.debug("Node id: "+node.getId().toString());
 		}
-
-		List<sm_nodes> n_temp = ruleData.getSm_nodes();
+		for(sm_dictionary seg : dictionariesToAdd){
+			logger.debug("Dictionary id: "+ seg.getId().toString());
+			logger.debug("Dictionary name: "+seg.getName());
+		}
 		
+		List<sm_nodes> n_temp = ruleData.getSm_nodes();
+		List<sm_segments> s_temp = ruleData.getSm_segments();
+		List<sm_segment_properties> sp_temp = ruleData.getSm_segment_properties();
+		List<sm_dictionary> d_temp = ruleData.getSm_dictionary();
+	
 		n_temp.removeAll(nodesToRemove);
-
+		s_temp.addAll(segmentsToAdd);
+		sp_temp.addAll(segmentPropertiesToAdd);
+		d_temp.addAll(dictionariesToAdd);
+		
 		ruleData.setSm_nodes(n_temp);
+		ruleData.setSm_segments(s_temp);
+		ruleData.setSm_segment_properties(sp_temp);
+		ruleData.setSm_dictionary(d_temp);
 	}
 	
 	@Override
@@ -650,6 +906,14 @@ public class RuleServiceImpl implements RuleService {
 	private Long getNextSm_link_propertiesId() {
 		List<Long> temp = new ArrayList<Long>();
 		for(sm_link_properties prop : ruleData.getSm_link_properties()){
+			temp.add(prop.getId());
+		}
+		return (Collections.max(temp)+1);
+	}
+	
+	private Long getNextSm_dictionaryId() {
+		List<Long> temp = new ArrayList<Long>();
+		for(sm_dictionary prop : ruleData.getSm_dictionary()){
 			temp.add(prop.getId());
 		}
 		return (Collections.max(temp)+1);
