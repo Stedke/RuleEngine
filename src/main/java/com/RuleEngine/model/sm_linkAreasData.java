@@ -8,14 +8,22 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
 public class sm_linkAreasData {
-	private Double velocity = new Double(0.0);
+	private List<Tuple<Long,Double>> velocity = new ArrayList<Tuple<Long,Double>>();
 	private Point start_point = new GeometryFactory().createPoint(new Coordinate(0,0));
-	private Point end_point = new GeometryFactory().createPoint(new Coordinate(0,0));;
+	private Point end_point = new GeometryFactory().createPoint(new Coordinate(0,0));
 	private List<sm_segments> sm_segments = new ArrayList<sm_segments>();
-	private List<sm_segment_properties> sm_segment_properties = new ArrayList<sm_segment_properties>();;
-	private List<sm_nodes> sm_nodes = new ArrayList<sm_nodes>();;
-	private List<sm_node_properties> sm_node_properties = new ArrayList<sm_node_properties>();;
-	private List<sm_link_properties> sm_link_properties = new ArrayList<sm_link_properties>();;
+	private List<sm_segment_properties> sm_segment_properties = new ArrayList<sm_segment_properties>();
+	private List<sm_nodes> sm_nodes = new ArrayList<sm_nodes>();
+	private List<sm_node_properties> sm_node_properties = new ArrayList<sm_node_properties>();
+	private List<sm_link_properties> sm_link_properties = new ArrayList<sm_link_properties>();
+	
+	public void addVelocity(Long id, Double velocity){
+		this.velocity.add(new Tuple<Long,Double>(new Long(id),new Double(velocity)));
+	}
+	
+	public void clearVelocity(){
+		this.velocity.clear();
+	}
 	
 	public void addData(sm_linkAreasData data){
 		
@@ -53,7 +61,6 @@ public class sm_linkAreasData {
 		sm_node_properties.addAll(data.getSm_node_properties());
 		sm_link_properties.addAll(data.getSm_link_properties());
 		
-		velocity = new Double(data.getVelocity());
 		start_point = new GeometryFactory().createPoint(data.getStart_point().getCoordinate());
 		end_point = new GeometryFactory().createPoint(data.getEnd_point().getCoordinate());	
 	}
@@ -69,12 +76,6 @@ public class sm_linkAreasData {
 	}
 	public void setEnd_point(Point end_point) {
 		this.end_point = end_point;
-	}
-	public Double getVelocity() {
-		return velocity;
-	}
-	public void setVelocity(Double velocity) {
-		this.velocity = velocity;
 	}
 	public List<sm_segments> getSm_segments() {
 		return sm_segments;
@@ -105,5 +106,11 @@ public class sm_linkAreasData {
 	}
 	public void setSm_link_properties(List<sm_link_properties> sm_link_properties) {
 		this.sm_link_properties = sm_link_properties;
+	}
+	public List<Tuple<Long, Double>> getVelocity() {
+		return velocity;
+	}
+	public void setVelocity(List<Tuple<Long, Double>> velocity) {
+		this.velocity = velocity;
 	}
 }

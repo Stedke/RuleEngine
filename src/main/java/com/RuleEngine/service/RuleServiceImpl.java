@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieScanner;
@@ -54,10 +55,45 @@ public class RuleServiceImpl implements RuleService {
 	private KieContainer kieContainer;
 	
 	public void fireRules(){
-        KieSession kieSession = kieContainer.newKieSession();//"ksession-rules");
-        //kieSession.insert(sm_nodes.get(0));
-        //kieSession.fireAllRules();
-        kieSession.dispose();
+		for(sm_linkAreasData d : sm_linkAreas){			
+	        KieSession kieSession = kieContainer.newKieSession();   
+	        sm_linkAreasData data = new sm_linkAreasData();
+	        kieSession.setGlobal("sm_linkAreasDataList", data);
+	        
+	        for(sm_link_properties prop : d.getSm_link_properties()){
+	        	kieSession.insert(prop);
+	        }
+	        for(sm_node_properties prop : d.getSm_node_properties()){
+	        	kieSession.insert(prop);
+	        }
+	        for(sm_segment_properties prop : d.getSm_segment_properties()){
+	        	kieSession.insert(prop);
+	        }
+	        for(sm_nodes prop : d.getSm_nodes()){
+	        	kieSession.insert(prop);
+	        }
+	        for(sm_segments prop : d.getSm_segments()){
+	        	kieSession.insert(prop);
+	        }
+	        for(sm_dictionary prop : ruleData.getSm_dictionary()){
+	        	kieSession.insert(prop);
+	        }
+	        
+	        kieSession.fireAllRules();        
+	        kieSession.dispose();		
+	        
+	        List<Tuple<Long,Double>> temp = d.getVelocity();
+	        temp.addAll(data.getVelocity());
+	        d.setVelocity(temp);
+		}
+		
+		logger.debug("CCCCCCCCCCCCCCC");
+		for(sm_linkAreasData q : sm_linkAreas){
+			logger.debug("Start: "+q.getStart_point().toString()+" End: "+q.getEnd_point().toString());
+			for(Tuple<Long,Double> t : q.getVelocity()){
+				logger.debug("Id: "+t.x.toString()+" Vel: "+t.y.toString());
+			}
+		}
 	}
 
 	@Override
@@ -447,7 +483,7 @@ public class RuleServiceImpl implements RuleService {
 			logger.debug("SegProp id: "+ seg.getId().toString());
 			logger.debug("SegProp dict name: "+seg.getDictionary_id().getName());
 			logger.debug("SegProp description: "+seg.getDescription());
-			logger.debug("SegProp tags: "+seg.getTags().toString());
+			logger.debug("SegProp tags: "+ Arrays.toString(seg.getTags()));
 			logger.debug("SegProp seg id: "+seg.getSegment_id().getId().toString());
 		}
 		for(sm_nodes node : nodesToRemove){
@@ -917,5 +953,13 @@ public class RuleServiceImpl implements RuleService {
 			temp.add(prop.getId());
 		}
 		return (Collections.max(temp)+1);
+	}
+
+	public List<sm_linkAreasData> getSm_linkAreas() {
+		return sm_linkAreas;
+	}
+
+	public void setSm_linkAreas(List<sm_linkAreasData> sm_linkAreas) {
+		this.sm_linkAreas = sm_linkAreas;
 	}
 }
