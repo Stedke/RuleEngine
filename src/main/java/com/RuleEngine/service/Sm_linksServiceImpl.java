@@ -19,14 +19,18 @@ public class Sm_linksServiceImpl implements Sm_linksService{
 	private List<sm_links> sm_Links;
 	
 	private Integer chosenSm_linkId;
+	
+	@Override
+	public void cleanup(){
+		sm_Links.clear();
+		if(chosenSm_linkId != null){
+			chosenSm_linkId = null;
+		}
+	}
 
 	@Transactional
 	public void getSm_links(ArrayList<String> linksArea) {
 		sm_Links = sm_linksDAO.getSm_links(linksArea);
-		
-	       for(sm_links link : sm_Links) {
-	           System.out.println(link.toString());
-	       }
 	}
 	@Override
 	public List<sm_links> getChosenSm_Links() {
@@ -45,8 +49,6 @@ public class Sm_linksServiceImpl implements Sm_linksService{
 		
 		if(isValid){
 			this.chosenSm_linkId = chosenSm_linkId;
-	        System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-	        System.out.println(chosenSm_linkId.toString());
 	        return true;
 		}else
 			return false;

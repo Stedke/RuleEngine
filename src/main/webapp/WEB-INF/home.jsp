@@ -33,5 +33,9 @@ ${message}<br/>
 ${message}<br/>
 <a href="${pageContext.request.contextPath}/velocity/Velocity.html">Determine velocity</a><br/>
 </p>
+<p>
+${message}<br/>
+<a href="${pageContext.request.contextPath}/cleanup/Cleanup.html">Cleanup</a><br/>
+</p>
 </body>
 </html>

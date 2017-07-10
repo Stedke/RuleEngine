@@ -12,4 +12,5 @@ public interface RuleService {
 	public void updateAllNodesImpacts();
 	public List<sm_linkAreasData> getSm_linkAreas();
 	public void setSm_linkAreas(List<sm_linkAreasData> sm_linkAreas);
+	public void cleanup();
 }

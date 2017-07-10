@@ -10,4 +10,5 @@ public interface Sm_linksService {
 	public List<sm_links> getChosenSm_Links();
 	public boolean setChosenSm_linkId(Integer chosenSm_linkId);
 	public sm_links getChosenSm_link();
+	public void cleanup();
 }

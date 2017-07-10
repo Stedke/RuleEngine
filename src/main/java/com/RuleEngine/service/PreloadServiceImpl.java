@@ -41,13 +41,26 @@ public class PreloadServiceImpl implements PreloadService {
 	@Autowired
 	private sm_nodesDAO sm_nodesDAO;
 	
-	private List<sm_link_properties> sm_link_properties;
-	private List<sm_segments> sm_segments;
+	private List<sm_link_properties> sm_link_properties = new ArrayList<sm_link_properties>();
+	private List<sm_segments> sm_segments = new ArrayList<sm_segments>();
 	private List<sm_nodes> sm_nodes = new ArrayList<sm_nodes>();
 	private List<sm_segment_properties> sm_segment_properties = new ArrayList<sm_segment_properties>();
 	private List<sm_node_properties> sm_node_properties = new ArrayList<sm_node_properties>();
 	private List<sm_dictionary> sm_dictionary = new ArrayList<sm_dictionary>();
 	private sm_links sm_link;
+	
+	@Override
+	public void cleanup(){
+		sm_link_properties.clear();
+		sm_segments.clear();
+		sm_nodes.clear();
+		sm_segment_properties.clear();
+		sm_node_properties.clear();
+		sm_dictionary.clear();
+		if(sm_link != null){
+			sm_link = null;
+		}
+	}
 
 	@Transactional
 	public void preloadData(sm_links sm_link){

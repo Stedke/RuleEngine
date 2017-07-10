@@ -27,4 +27,5 @@ public interface PreloadService {
 	public List<sm_nodes> getSm_nodes();
 	public void setSm_nodes(List<sm_nodes> sm_nodes);
 	public ruleData transferData();
+	public void cleanup();
 }

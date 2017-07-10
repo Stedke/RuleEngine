@@ -27,4 +27,5 @@ public interface ValidateService {
 	public sm_dictionary getSm_dictionary(Long id);
 	public sm_links getSm_link();
 	public sm_segments getSm_segments(Long id);
+	public void cleanup();
 }

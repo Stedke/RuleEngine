@@ -54,6 +54,20 @@ public class RuleServiceImpl implements RuleService {
 	@Autowired
 	private KieContainer kieContainer;
 	
+	@Override
+	public void cleanup(){
+		ruleData = null;
+		ruleData = new ruleData();
+		sm_linkAreas.clear();
+		if(kieScannerImpact != null){
+			kieScannerImpact.stop();
+			kieScannerImpact.shutdown();
+		}
+		if(kieContainerImpact != null){
+			kieContainerImpact.dispose();	
+		}
+	}
+	
 	public void fireRules(){
 		for(sm_linkAreasData d : sm_linkAreas){			
 	        KieSession kieSession = kieContainer.newKieSession();   
@@ -463,11 +477,8 @@ public class RuleServiceImpl implements RuleService {
 							}
 							
 						} else if(elem.y.getImpact().compareTo(sm_nodeImpactEnum.FROM) == 0){
-							
 						}else if(elem.y.getImpact().compareTo(sm_nodeImpactEnum.UNTIL) == 0){
-							
-						}else if(elem.y.getImpact().compareTo(sm_nodeImpactEnum.AREA) == 0){
-							
+						}else if(elem.y.getImpact().compareTo(sm_nodeImpactEnum.AREA) == 0){	
 						}
 					}
 				}

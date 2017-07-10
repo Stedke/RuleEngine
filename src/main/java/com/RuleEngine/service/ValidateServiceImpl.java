@@ -32,6 +32,21 @@ public class ValidateServiceImpl implements ValidateService{
 	
 	@Autowired
 	Sm_linksService Sm_linksService;
+	
+	@Override
+	public void cleanup(){
+		ruleData = null;
+		ruleData = new ruleData();
+		missingRuleData = null;
+		missingRuleData = new ruleData();
+		if(kieScanner != null){
+			kieScanner.stop();
+			kieScanner.shutdown();
+		}
+		if(kieContainer != null){
+			kieContainer.dispose();	
+		}
+	}
  
 	@Override
 	public void fireValidateRules() {
