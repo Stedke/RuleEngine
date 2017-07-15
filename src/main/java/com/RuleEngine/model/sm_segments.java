@@ -12,6 +12,9 @@ public class sm_segments {
     @Id
     @GeneratedValue
     private Long id;
+    
+    @Column(name="inLineWithLink")
+    private boolean inLineWithLink;
           
     @ManyToOne
     @JoinColumn(name = "link_id")
@@ -79,6 +82,14 @@ public class sm_segments {
 
 	public void setSegment_id(Set<sm_segment_properties> segment_id) {
 		this.segment_id = segment_id;
+	}
+
+	public boolean isInLineWithLink() {
+		return inLineWithLink;
+	}
+
+	public void setInLineWithLink(boolean inLineWithLink) {
+		this.inLineWithLink = inLineWithLink;
 	}
 
 	@Override

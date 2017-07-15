@@ -104,7 +104,7 @@
 <table border="1px" cellpadding="0" cellspacing="0" >
 <thead>
 <tr>
-<th width="15%">id</th><th width="30%">geom</th>
+<th width="15%">id</th><th width="30%">geom</th><th width="30%">inLineWithLink</th>
 </tr>
 </thead>
 <tbody>
@@ -112,6 +112,7 @@
 <tr>
 	<td>${sm_segments.id}</td>
 	<td>${sm_segments.geom}</td>
+	<td>${sm_segments.inLineWithLink}</td>
 </tr>
 </c:forEach>
 </tbody>

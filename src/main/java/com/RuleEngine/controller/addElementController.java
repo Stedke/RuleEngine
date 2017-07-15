@@ -189,6 +189,7 @@ public class addElementController {
     	model.addAttribute("start_node", segmentsWrapper.getStart_node());
     	model.addAttribute("end_node", segmentsWrapper.getEnd_node());
     	model.addAttribute("geom", segmentsWrapper.getGeom());
+    	model.addAttribute("inLineWithLink", segmentsWrapper.getInLineWithLink());
     	
     	ArrayList<String> geom = new ArrayList<String>(Arrays.asList(segmentsWrapper.getGeom().split(";")));
     	ArrayList<Double> geomd = new ArrayList<Double>();
@@ -213,7 +214,7 @@ public class addElementController {
     	segments.setStart_node(ValidateService.getSm_nodes(Long.parseLong(segmentsWrapper.getStart_node())));
     	segments.setEnd_node(ValidateService.getSm_nodes(Long.parseLong(segmentsWrapper.getEnd_node())));
     	segments.setLink_id(ValidateService.getSm_link());
-    	
+    	segments.setInLineWithLink(Boolean.parseBoolean(segmentsWrapper.getInLineWithLink()));
     	
         List<sm_segments> temp = new ArrayList<sm_segments>();
         temp.add(segments);

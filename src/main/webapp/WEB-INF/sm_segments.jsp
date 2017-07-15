@@ -24,7 +24,11 @@
 		<td><form:input path = "end_node" /></td>
 	</tr>
 	<tr>
-		<td colspan = "2">
+		<td><form:label path = "inLineWithLink">inLineWithLink</form:label></td>
+		<td><form:input path = "inLineWithLink" /></td>
+	</tr>
+	<tr>
+		<td colspan = "3">
 			<input type = "submit" value = "Submit"/>
 		</td>
 	</tr>

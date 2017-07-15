@@ -7,6 +7,7 @@ public class sm_segmentsWrapper {
 	    private String start_node;
 	    private String end_node;    
 	    private String geom;
+	    private String inLineWithLink;
 	    
 		public String getId() {
 			return id;
@@ -37,5 +38,11 @@ public class sm_segmentsWrapper {
 		}
 		public void setGeom(String geom) {
 			this.geom = geom;
+		}
+		public String getInLineWithLink() {
+			return inLineWithLink;
+		}
+		public void setInLineWithLink(String inLineWithLink) {
+			this.inLineWithLink = inLineWithLink;
 		}
 }
