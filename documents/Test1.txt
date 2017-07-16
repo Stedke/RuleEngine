@@ -147,7 +147,7 @@ insert into sm_node_properties (node_id,tags,description,dictionary_id) values
 
 insert into sm_link_properties (link_id,tags,description,dictionary_id) values
 	(5,'{"G"}','Road category',1),
-	(6,'{"Z"}','Road category',1);
+	(6,'{"D"}','Road category',1);
 		
 insert into sm_segment_properties (segment_id,tags,description,dictionary_id) values
 	(15,'{"G"}','Road category',1),

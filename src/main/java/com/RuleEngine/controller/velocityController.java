@@ -39,7 +39,7 @@ public class velocityController {
 			
 			sm_linkAreas = RuleService.getSm_linkAreas();
 		}
-		
+
 		modelAndView.addObject("sm_linkAreas", sm_linkAreas);
 		modelAndView.addObject("isSuccessful", isSuccessful);
 		

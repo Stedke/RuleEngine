@@ -231,6 +231,7 @@ public class RuleServiceImpl implements RuleService {
 								sm_segmentsId++;
 								sm.setLink_id(ruleData.getSm_link());
 								sm.setGeom(line);
+								sm.setInLineWithLink(true);
 								
 								sm_props.setSegment_id(sm);
 								
@@ -363,6 +364,7 @@ public class RuleServiceImpl implements RuleService {
 								sm_segmentsId++;
 								sm1.setLink_id(ruleData.getSm_link());
 								sm1.setGeom(line1);
+								sm1.setInLineWithLink(false);
 
 								sm_props2.setSegment_id(sm1);
 
@@ -489,6 +491,7 @@ public class RuleServiceImpl implements RuleService {
 		for(sm_segments seg : segmentsToAdd){
 			logger.debug("Seg id: "+ seg.getId().toString());
 			logger.debug("Seg geom: "+seg.getGeom().toString());
+			logger.debug("Seg inLineWithLink: "+Boolean.toString(seg.isInLineWithLink()));
 		}
 		for(sm_segment_properties seg : segmentPropertiesToAdd){
 			logger.debug("SegProp id: "+ seg.getId().toString());
