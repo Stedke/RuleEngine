@@ -47,13 +47,19 @@ dialect "mvel"
 when
     $dictionary : sm_dictionary(name == "Road category")
     $prop : sm_segment_properties(dictionary_id.getName().equals("Road category"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("Road category"))
 then
 
 $RoadTags = $prop.getTags();
-if(Arrays.asList($RoadTags).contains("D")){
+if(Arrays.asList($RoadTags).contains("D") || Arrays.asList($RoadTags).contains("L") || Arrays.asList($RoadTags).contains("Z") || Arrays.asList($RoadTags).contains("G") || Arrays.asList($RoadTags).contains("GP")){
     sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(90));
+}else if(Arrays.asList($RoadTags).contains("S") && ($prop.getSegment_id().isInLineWithLink() == $prop1.getSegment_id().isInLineWithLink())){
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(120));
+}else if(Arrays.asList($RoadTags).contains("S")){
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(100));
+}else if(Arrays.asList($RoadTags).contains("A")){
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(140));
 }
-
 end
 
 rule "Road category link"
@@ -64,10 +70,49 @@ when
 then
 
 $RoadTags = $prop.getTags();
-if(Arrays.asList($RoadTags).contains("Z")){
-    sm_linkAreasDataList.addVelocity(new Long(0), new Double(90));
+if(Arrays.asList($RoadTags).contains("A")){
+    sm_linkAreasDataList.addVelocity(new Long(0), new Double(140));
+}else{
+	sm_linkAreasDataList.addVelocity(new Long(0), new Double(90));
 }
-
 end
+
+rule "Urban Area"
+dialect "mvel"
+when
+    $dictionary : sm_dictionary(name == "D42")
+    $prop : sm_segment_properties(dictionary_id.getName().equals("D42"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("Road category"))
+then
+if($prop.getSegment_id().isInLineWithLink() == $prop1.getSegment_id().isInLineWithLink()){
+	sm_linkAreasDataList.addVelocity(new Long($prop1.getSegment_id().getId()), new Double(50));
+}
+end
+
+rule "Living Area"
+dialect "mvel"
+when
+    $dictionary : sm_dictionary(name == "D40")
+    $prop : sm_segment_properties(dictionary_id.getName().equals("D40"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("Road category"))
+then
+if($prop.getSegment_id().isInLineWithLink() == $prop1.getSegment_id().isInLineWithLink()){
+	sm_linkAreasDataList.addVelocity(new Long($prop1.getSegment_id().getId()), new Double(20));
+}
+end
+
+rule "V85"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("V85"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("VMax"))
+	$prop2 : sm_segment_properties(dictionary_id.getName().equals("Road category"))
+then
+	$V85 = $prop.getTags();
+	$VMax = $prop1.getTags();
+
+	sm_linkAreasDataList.addVelocity(new Long($prop2.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-Double.parseDouble($VMax[1])+10));
+end
+
 
 
