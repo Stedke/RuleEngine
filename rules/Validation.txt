@@ -1,0 +1,9 @@
+package com.ruleengine.validateruleengine;
+import com.RuleEngine.model.sm_dictionary;
+
+rule "Rule1"
+when
+    not (sm_dictionary(name=="P4 property"))
+then
+    missingIdsList.insertMissingElementsName("P4 property");
+end

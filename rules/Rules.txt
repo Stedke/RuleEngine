@@ -1,0 +1,73 @@
+package com.ruleengine.ruleengine;
+import com.RuleEngine.model.*;
+import java.lang.Long;
+import java.util.Arrays;
+import java.lang.Double;
+
+rule "Wild animals segment"
+dialect "mvel"
+when
+    $dictionary : sm_dictionary(name == "Wild animals")
+    $prop : sm_segment_properties(dictionary_id.getName().equals("Wild animals"))
+    $dictionary1 : sm_dictionary(name == "Road category")
+    $prop1 : sm_segment_properties(dictionary_id.getName().equals("Road category"))
+then
+
+$RoadTags = $prop1.getTags();
+if(Arrays.asList($RoadTags).contains("D")){
+    $AnimalsTags = $prop.getTags();
+    if(Double.parseDouble($AnimalsTags[1]) > 50){
+        sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(50));
+    }
+}
+
+end
+
+rule "Traffic lights segment"
+dialect "mvel"
+when
+    $dictionary : sm_dictionary(name == "Traffic lights")
+    $prop : sm_segment_properties(dictionary_id.getName().equals("Traffic lights"))
+    $dictionary1 : sm_dictionary(name == "Road category")
+    $prop1 : sm_segment_properties(dictionary_id.getName().equals("Road category"))
+    $dictionary2 : sm_dictionary(name == "TO_FROM_UNTIL")
+    $prop2 : sm_segment_properties(dictionary_id.getName().equals("TO_FROM_UNTIL"))
+then
+    $tags = $prop2.getTags();
+    
+    if(Arrays.asList($tags).contains("TO") && $prop.getSegment_id().isInLineWithLink()){
+        sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(40));      
+    }else if(Arrays.asList($tags).contains("TO1") && !$prop.getSegment_id().isInLineWithLink()){
+        sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(40));
+    }
+end
+
+rule "Road category segment"
+dialect "mvel"
+when
+    $dictionary : sm_dictionary(name == "Road category")
+    $prop : sm_segment_properties(dictionary_id.getName().equals("Road category"))
+then
+
+$RoadTags = $prop.getTags();
+if(Arrays.asList($RoadTags).contains("D")){
+    sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(90));
+}
+
+end
+
+rule "Road category link"
+dialect "mvel"
+when
+    $dictionary : sm_dictionary(name == "Road category")
+    $prop : sm_link_properties(dictionary_id.getName().equals("Road category"))
+then
+
+$RoadTags = $prop.getTags();
+if(Arrays.asList($RoadTags).contains("Z")){
+    sm_linkAreasDataList.addVelocity(new Long(0), new Double(90));
+}
+
+end
+
+

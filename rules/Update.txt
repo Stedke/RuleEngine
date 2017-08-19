@@ -1,0 +1,10 @@
+package com.ruleengine.impactruleengine;
+import com.RuleEngine.model.sm_dictionary;
+import com.RuleEngine.model.sm_nodeImpactEnum;
+
+rule "Rule1"
+when
+    sm_dictionary(name=="Traffic lights")
+then
+    sm_nodeImpactAreaList.addNewNode("Traffic lights",sm_nodeImpactEnum.TO, new Double(1));
+end
