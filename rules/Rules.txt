@@ -3,6 +3,7 @@ import com.RuleEngine.model.*;
 import java.lang.Long;
 import java.util.Arrays;
 import java.lang.Double;
+import java.lang.Math;
 
 rule "Wild animals segment"
 dialect "mvel"
@@ -110,7 +111,7 @@ then
 	$V85 = $prop.getTags();
 	$VMax = $prop1.getTags();
 
-	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-Double.parseDouble($VMax[1])+10));
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[0])-Double.parseDouble($VMax[0])+10));
 end
 
 rule "Road width"
@@ -123,7 +124,7 @@ then
 	$Width = $prop.getTags();
 
 	if(Double.parseDouble($Width[1]) < 6){
-		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[0])-16));
 	}
 end
 
@@ -137,7 +138,7 @@ then
 	$Width = $prop.getTags();
 
 	if(Double.parseDouble($Width[1]) < 2){
-		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[0])-16));
 	}
 end
 
@@ -151,7 +152,7 @@ then
 	$Slope = $prop.getTags();
 
 	if(Arrays.asList($Slope).contains("Blocks")){
-		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[0])-16));
 	}
 end
 
@@ -165,7 +166,7 @@ then
 	$Slope = $prop.getTags();
 
 	if(Arrays.asList($Slope).contains("Blocks")){
-		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[0])-16));
 	}
 end
 
@@ -179,7 +180,7 @@ then
 	$Cyclists = $prop.getTags();
 
 	if(Arrays.asList($Cyclists).contains("Dangerous")){
-		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[0])-16));
 	}
 end
 
@@ -193,7 +194,7 @@ then
 	$Pedestrians = $prop.getTags();
 
 	if(Arrays.asList($Pedestrians).contains("Dangerous")){
-		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[0])-16));
 	}
 end
 
@@ -212,7 +213,7 @@ when
 then
 	$Radius = $prop.getTags();
 
-	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(101/(1+15.191*(Double.parseDouble($VRadius[1]))^(-0.772))));
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(101.0/(1.0+15.191*Math.pow(Double.parseDouble($Radius[0]),-0.772))));
 end
 
 rule "Slope"
@@ -224,9 +225,9 @@ then
 	$Angle = $prop.getTags();
 
 	if($prop.getSegment_id().isInLineWithLink() == $prop1.getSegment_id().isInLineWithLink()){
-		sm_linkAreasDataList.addVelocity(new Long($prop1.getSegment_id().getId()), new Double(-0.0225*(Double.parseDouble($Angle[1]))^2-1.2619*(Double.parseDouble($Angle[1]))+91.092);
+		sm_linkAreasDataList.addVelocity(new Long($prop1.getSegment_id().getId()), new Double(-0.0225*(Math.pow(Double.parseDouble($Angle[0]),2.0))-1.2619*(Double.parseDouble($Angle[0]))+91.092));
 	}else{
-		sm_linkAreasDataList.addVelocity(new Long($prop1.getSegment_id().getId()), new Double(0.2444*(Double.parseDouble($Angle[1]))^2-2.5573*(Double.parseDouble($Angle[1]))+89.6331);	
+		sm_linkAreasDataList.addVelocity(new Long($prop1.getSegment_id().getId()), new Double(0.2444*(Math.pow(Double.parseDouble($Angle[0]),2.0))-2.5573*(Double.parseDouble($Angle[0]))+89.6331));	
 	}
 end
 
@@ -237,7 +238,7 @@ when
 then
 	$Velocity = $prop.getTags();
 
-	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($Velocity[1])));
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($Velocity[0])));
 end
 
 rule "Transverse vehicles urban"
@@ -253,10 +254,10 @@ rule "Transverse vehicles"
 dialect "mvel"
 when
 	$prop : sm_segment_properties(dictionary_id.getName().equals("Transverse vehicles"))
-	not (sm_segment_properties(dictionary_id.getName().equals("D42"))))
+	not (sm_dictionary(name=="D42"))
 then
 	$Vehicles = $prop.getTags();
-	if((Double.parseDouble($Vehicles[1]) > 50) || (Double.parseDouble($Vehicles[2]) > 500)){
+	if((Double.parseDouble($Vehicles[0]) > 50) || (Double.parseDouble($Vehicles[1]) > 500)){
 		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(50));
 	}else{
 		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(80));
