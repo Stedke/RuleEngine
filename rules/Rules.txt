@@ -106,13 +106,176 @@ dialect "mvel"
 when
 	$prop : sm_segment_properties(dictionary_id.getName().equals("V85"))
 	$prop1 : sm_segment_properties(dictionary_id.getName().equals("VMax"))
-	$prop2 : sm_segment_properties(dictionary_id.getName().equals("Road category"))
 then
 	$V85 = $prop.getTags();
 	$VMax = $prop1.getTags();
 
-	sm_linkAreasDataList.addVelocity(new Long($prop2.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-Double.parseDouble($VMax[1])+10));
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-Double.parseDouble($VMax[1])+10));
 end
 
+rule "Road width"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Road width"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("V85"))
+then
+	$V85 = $prop1.getTags();
+	$Width = $prop.getTags();
 
+	if(Double.parseDouble($Width[1]) < 6){
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+	}
+end
+
+rule "Roadside width"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Roadside width"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("V85"))
+then
+	$V85 = $prop1.getTags();
+	$Width = $prop.getTags();
+
+	if(Double.parseDouble($Width[1]) < 2){
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+	}
+end
+
+rule "Horizontal slope"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Horizontal slope"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("V85"))
+then
+	$V85 = $prop1.getTags();
+	$Slope = $prop.getTags();
+
+	if(Arrays.asList($Slope).contains("Blocks")){
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+	}
+end
+
+rule "Vertical slope"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Vertical slope"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("V85"))
+then
+	$V85 = $prop1.getTags();
+	$Slope = $prop.getTags();
+
+	if(Arrays.asList($Slope).contains("Blocks")){
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+	}
+end
+
+rule "Cyclists"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Cyclists"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("V85"))
+then
+	$V85 = $prop1.getTags();
+	$Cyclists = $prop.getTags();
+
+	if(Arrays.asList($Cyclists).contains("Dangerous")){
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+	}
+end
+
+rule "Pedestrians"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Pedestrians"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("V85"))
+then
+	$V85 = $prop1.getTags();
+	$Pedestrians = $prop.getTags();
+
+	if(Arrays.asList($Pedestrians).contains("Dangerous")){
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($V85[1])-16));
+	}
+end
+
+rule "School"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("School"))
+then
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(40));
+end
+
+rule "Curve"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Curve"))
+then
+	$Radius = $prop.getTags();
+
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(101/(1+15.191*(Double.parseDouble($VRadius[1]))^(-0.772))));
+end
+
+rule "Slope"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Slope"))
+	$prop1 : sm_segment_properties(dictionary_id.getName().equals("Road Category"))
+then
+	$Angle = $prop.getTags();
+
+	if($prop.getSegment_id().isInLineWithLink() == $prop1.getSegment_id().isInLineWithLink()){
+		sm_linkAreasDataList.addVelocity(new Long($prop1.getSegment_id().getId()), new Double(-0.0225*(Double.parseDouble($Angle[1]))^2-1.2619*(Double.parseDouble($Angle[1]))+91.092);
+	}else{
+		sm_linkAreasDataList.addVelocity(new Long($prop1.getSegment_id().getId()), new Double(0.2444*(Double.parseDouble($Angle[1]))^2-2.5573*(Double.parseDouble($Angle[1]))+89.6331);	
+	}
+end
+
+rule "Road surface"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Road surface"))
+then
+	$Velocity = $prop.getTags();
+
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(Double.parseDouble($Velocity[1])));
+end
+
+rule "Transverse vehicles urban"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Transverse vehicles"))
+	sm_segment_properties(dictionary_id.getName().equals("D42"))
+then
+	sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(50));
+end
+
+rule "Transverse vehicles"
+dialect "mvel"
+when
+	$prop : sm_segment_properties(dictionary_id.getName().equals("Transverse vehicles"))
+	not (sm_segment_properties(dictionary_id.getName().equals("D42"))))
+then
+	$Vehicles = $prop.getTags();
+	if((Double.parseDouble($Vehicles[1]) > 50) || (Double.parseDouble($Vehicles[2]) > 500)){
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(50));
+	}else{
+		sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(80));
+	}
+end
+
+rule "Pedestrian crossing"
+dialect "mvel"
+when
+    $prop : sm_segment_properties(dictionary_id.getName().equals("Pedestrian crossing"))
+    $prop1 : sm_segment_properties(dictionary_id.getName().equals("Road category"))
+    $prop2 : sm_segment_properties(dictionary_id.getName().equals("TO_FROM_UNTIL"))
+then
+    $tags = $prop2.getTags();
+    
+    if(Arrays.asList($tags).contains("TO") && $prop.getSegment_id().isInLineWithLink()){
+        sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(50));      
+    }else if(Arrays.asList($tags).contains("TO1") && !$prop.getSegment_id().isInLineWithLink()){
+        sm_linkAreasDataList.addVelocity(new Long($prop.getSegment_id().getId()), new Double(50));
+    }
+end
 
