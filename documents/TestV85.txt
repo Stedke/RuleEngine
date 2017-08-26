@@ -1,0 +1,99 @@
+-- osm layer
+create table planet_osm_nodes(
+	id bigserial primary key not null,
+	tags text[],
+	geom geometry(POINT)
+);
+
+create table planet_osm_ways(
+	id bigserial primary key not null,
+	nodes bigint[],
+	tags text[],
+	geom geometry(LINESTRING)
+);
+
+-- segment layer
+create table sm_nodes(
+	id bigserial primary key not null,
+	osm_node bigint references planet_osm_nodes(id),
+	geom geometry(POINT)
+);
+create table sm_links(
+	id bigserial primary key not null,
+	way_id bigint references planet_osm_ways(id),
+	osm_start_node bigint references planet_osm_nodes(id),
+	osm_end_node bigint references planet_osm_nodes(id),
+	geom geometry(LINESTRING)
+);
+create table sm_segments(
+	id bigserial primary key not null,
+	link_id bigint references sm_links(id),
+	start_node bigint references sm_nodes(id),
+	end_node bigint references sm_nodes(id),
+	inLineWithLink boolean,
+	geom geometry(LINESTRING)
+);
+
+-- dictionary
+create table sm_dictionary(
+	id bigserial primary key not null,
+	name text,
+	description text,
+	key text[],
+	datatypes text[],
+	required boolean[]
+);
+
+-- properties
+create table sm_node_properties(
+	id bigserial primary key not null,
+	node_id bigint references sm_nodes(id),
+	tags text[],
+	description text,
+	dictionary_id bigint references sm_dictionary(id)
+);
+create table sm_segment_properties(
+	id bigserial primary key not null,
+	segment_id bigint references sm_segments(id),
+	tags text[],
+	description text,
+	dictionary_id bigint references sm_dictionary(id)
+);
+create table sm_link_properties(
+	id bigserial primary key not null,
+	link_id bigint references sm_links(id),
+	tags text[],
+	description text,
+	dictionary_id bigint references sm_dictionary(id)
+);
+
+-- osm layer inserts
+	
+-- segment layer inserts
+insert into sm_nodes (osm_node,geom) values
+    (NULL,ST_GeomFromText('point(2 10)')),
+	(NULL,ST_GeomFromText('point(5 10)')),
+	(NULL,ST_GeomFromText('point(13 10)')),
+	(NULL,ST_GeomFromText('point(17 10)'));
+
+insert into sm_links (way_id,osm_start_node,osm_end_node,geom) values
+	(NULL,NULL,NULL,ST_GeomFromText('linestring(2 10,17 10)'));
+
+insert into	sm_segments (link_id,start_node,end_node,inLineWithLink,geom) values
+	(1,2,3,true,ST_GeomFromText('linestring(5 10,13 10)')),
+	(1,1,4,true,ST_GeomFromText('linestring(2 10,17 10)'));
+	
+-- dictionary inserts
+insert into sm_dictionary (name,description,key,datatypes,required) values
+	('Road category','Road category','{"Category"}','{"String"}','{FALSE}'),
+	('V85','V85','{"V85"}','{"String"}','{FALSE}'),
+	('VMax','VMax','{"VMax"}','{"String"}','{FALSE}');
+	
+-- properties inserts
+
+insert into sm_link_properties (link_id,tags,description,dictionary_id) values
+	(1,'{"G"}','Road category',1);
+		
+insert into sm_segment_properties (segment_id,tags,description,dictionary_id) values
+	(1,'{"100"}','V85',2),
+	(2,'{"15"}','VMax',3);
